@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&family=Roboto:wght@400;700&family=Titillium+Web&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Advent+Pro:ital,wght@0,100..900;1,100..900&family=Cabin:ital,wght@0,400..700;1,400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+
+.container {
+    position: relative;
+  }
+  
+  .rulesButton {
+    font-family: 'Advent Pro';
+    letter-spacing: 1px;
+    padding: 10px 20px;
+    background: #E70005;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .modalContent {
+    background: white;
+    background-image: url(/public/rules-background.svg);
+    padding: 2rem;
+    border-radius: 8px;
+    max-width: 1200px;
+    width: 90%;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow-y: scroll;
+    max-height: 90%;
+  }
+
+  h3 {
+    font-family: "Advent Pro", sans-serif;
+    font-size: 56px;
+    font-weight: normal;
+    letter-spacing: 10px;
+    color: #205115;
+  }
+
+  h4 {
+    font-family: 'Advent Pro';
+    font-size: 24px;
+    font-weight: 600;
+    color: #205115;
+  }
+
+  p {
+    font-family: 'Advent Pro';
+    font-size: 20px;
+    color: #205115;
+  }
+
+  .closeButton {
+    font-family: 'Advent Pro';
+    letter-spacing: 1px;
+    margin-top: 1rem;
+    padding: 8px 16px;
+    background: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .ruleSection {
+    text-align: left;
+    margin-top: 15px;
+  }

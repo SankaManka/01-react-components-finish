@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&family=Roboto:wght@400;700&family=Titillium+Web&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Advent+Pro:ital,wght@0,100..900;1,100..900&family=Cabin:ital,wght@0,400..700;1,400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #205115;
+  box-sizing: border-box;
+  padding: 29px;
+  height: 100%;
+}
+
+.main {
+  background-color: #F3F8E8;
+  border-radius: 50px;
+  max-width: 100%;
+  min-height: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+  padding-top: 2rem;
+  text-align: center;
+  background-image: url(/public/Group-76.svg);
+  background-repeat: no-repeat;
+  background-position: bottom;
+}
+
+h1 {
+ font-family: 'Cabin', sans-serif;
+ font-size: 128px;
+ font-weight: bold;
+ color: #205115;
+ letter-spacing: 10px;
+}
+
+h2 {
+  font-family: "Advent Pro", sans-serif;
+  font-size: 96px;
+  font-weight: normal;
+  letter-spacing: 10px;
+  color: #205115;
+}
+
+h3 {
+  margin-bottom: 1rem;
+}
+
+section ul {
+  list-style: none;
+}
+
+section ul li {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.content,
+p {
+  padding: 1rem 0;
+}
+
+.centered {
+  text-align: center;
+}
+
+.control {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  width: 100%;
+  margin-bottom: 1rem;
+}

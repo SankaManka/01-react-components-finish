@@ -1,0 +1,49 @@
+.registerFormHeading {
+    font-size: 48px;
+    font-family: 'Advent pro';
+    color: #205115;
+    letter-spacing: 5px;
+    margin-top: 15px;
+  }
+  
+  .inputLogin {
+    width: 330px;
+    height: 51px;
+    background-color: #F3F8E8;
+    font-family: 'Advent pro';
+    font-size: 16px;
+    border: 2px solid #205115;
+    border-radius: 19px;
+    outline: none;
+    padding-left: 20px;
+    font-weight: 500;
+    color: #205115;
+    margin-bottom: 26px;
+  }
+  
+  .inputLogin::placeholder {
+    color: #205115;
+    font-weight: 300;
+  }
+  
+  .registrationBtn {
+    width: 330px;
+    height: 51px;
+    background-color: #205115;
+    border-radius: 19px;
+    font-family: 'Advent Pro';
+    color: #fff;
+    font-size: 20px;
+    border: none;
+    letter-spacing: 2px;
+    font-weight: 200;
+    cursor: pointer;
+  }
+
+  .registrationBtn:hover {
+    background-color: #183b10;
+  }
+
+  .enterLink {
+    color: #205115;
+  }
