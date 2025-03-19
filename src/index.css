@@ -79,3 +79,44 @@ p {
   width: 100%;
   margin-bottom: 1rem;
 }
+
+/* accoint styles down below */
+
+.account-lobbie {
+  background-color: #F3F8E8;
+  border-radius: 50px;
+  max-width: 100%;
+  min-height: 100%;
+  margin: 0 auto;
+  padding: 2rem;
+  background-image: url(/public/account-background.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.heading-account {
+  font-family: 'Cabin', sans-serif;
+  font-size: 40px;
+  font-weight: bold;
+  color: #205115;
+  letter-spacing: 5px;
+}
+
+.sub-heading-account {
+  font-family: "Advent Pro", sans-serif;
+  font-size: 36px;
+  font-weight: normal;
+  letter-spacing: 5px;
+  color: #205115;
+}
+
+.lobbies-container {
+  width: 727px;
+  height: 643px;
+  border-radius: 34px;
+  box-shadow: 0 0 21.8px 7px #20511520;
+  background-color: #F3F8E8;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 23px;
+}
