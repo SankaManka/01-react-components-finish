@@ -6,7 +6,16 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': 'http://localhost:8000', // Прокси для API запросов
+      '/api': {
+        target: 'http://localhost:8000', // Адрес бэка
+        changeOrigin: true, // Меняет origin запроса (важно для CORS)
+        secure: false, // Выключаем проверку SSL (если локально)
+        ws: true,
+        headers: {
+          'Access-Control-Allow-Origin': 'http://localhost:5173',
+        },
+      },
     },
+    cors: true,
   },
 })

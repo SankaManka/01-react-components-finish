@@ -182,7 +182,7 @@ p {
   color: #F3F8E8;
 }
 
-.join-btn, .create-lobby-btn {
+.join-btn, .close-modal-btn {
   width: 168px;
   height: 30px;
   background-color: #ED1D24;
@@ -197,11 +197,10 @@ p {
 }
 
 /* create-lobby-btn */
-
-/* .create-lobby-btn {
+.create-lobby-btn-modal {
   width: 168px;
   height: 30px;
-  background-color: #ED1D24;
+  background-color: #436F39;
   border-radius: 10px;
   border: none;
   color: #F3F8E8;
@@ -210,4 +209,73 @@ p {
   letter-spacing: 1px;
   line-height: 22px;
   cursor: pointer;
-} */
+  margin-right: 5px;
+}
+
+.create-lobby-btn {
+  width: 168px;
+  height: 30px;
+  background-color: #436F39;
+  border-radius: 10px;
+  border: none;
+  color: #F3F8E8;
+  font-family: 'Advent Pro';
+  font-size: 18px;
+  letter-spacing: 1px;
+  line-height: 22px;
+  cursor: pointer;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  text-align: center;
+}
+
+.close-modal-btn {
+  margin-top: 10px;
+}
+
+.p {
+  padding: 0;
+  margin-bottom: 5px;
+}
+.p-heading {
+  padding: 0;
+  margin-bottom: 20px;
+  font-weight: 500;
+  font-size: 22px;
+}
+.time-chose-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lobby-passwd-input {
+  width: 244px;
+  height: 36px;
+  background-color: #F3F8E8;
+  font-family: 'Advent pro';
+  font-size: 16px;
+  border: 1px solid #436F39;
+  border-radius: 9px;
+  outline: none;
+  padding-left: 20px;
+  font-weight: 500;
+  color: #436F39;
+}

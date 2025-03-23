@@ -9,8 +9,16 @@
 <body>
     <main class="account-lobbie">
         <div id="modal"></div>
-        <h1 class="heading-account">EVOLUTION</h1>
-        <h2 class="sub-heading-account">ЭВОЛЮЦИЯ</h2>
+        <section style="display: flex;justify-content: space-between;align-items:first baseline;">
+            <section>
+                <h1 class="heading-account">EVOLUTION</h1>
+                <h2 class="sub-heading-account">ЭВОЛЮЦИЯ</h2>
+            </section>
+            <section id="logoutButton">
+                <!-- Кнопка выхода будет вставлена сюда через React -->
+            </section>
+        </section>
+
         <div class="lobbies">
             <h3 class="lobby-heading">Список свободных лобби</h3>
             <div id="lobbiesContainer" class="lobbies-container"></div>
