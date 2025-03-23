@@ -23,7 +23,7 @@ const RegistrationForm = ({ toggleForm }) => {
 
                 const data = await response.json();
 
-                if (data.status === 'success') {
+                if (data.status === 'ok') {
                     window.location.href = '/account';
                 } else {
                     alert('Ошибка входа: ' + (data.message || 'Неизвестная ошибка'));

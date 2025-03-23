@@ -23,7 +23,7 @@ export default function Register({ toggleForm }) {
 
         const data = await response.json();
 
-        if (data.status === 'success') {
+        if (data.status === 'ok') {
           window.location.href = '/account';
         } else {
           alert('Ошибка регистрации: ' + (data.message || 'Неизвестная ошибка'));
