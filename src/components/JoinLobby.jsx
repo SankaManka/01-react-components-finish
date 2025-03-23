@@ -16,8 +16,8 @@ const JoinLobbyModal = ({ isOpen, onClose, lobby_id }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            lobby_id: lobby_id,
-            lobby_password: lobby_password,
+            lobby_id: String(id_lobby),
+            lobby_password: password,
         }),
       });
 
