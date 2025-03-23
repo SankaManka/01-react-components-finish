@@ -119,6 +119,7 @@ p {
   margin: 0 auto;
   box-sizing: border-box;
   padding: 23px;
+  overflow-y: scroll;
 }
 
 .lobby-parent {

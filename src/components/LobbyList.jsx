@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Lobby from './Lobby';
 
 // Компонент модального окна
 const Modal = ({ isOpen, onClose, children }) => {
@@ -14,26 +15,6 @@ const Modal = ({ isOpen, onClose, children }) => {
   );
 };
 
-// Компонент отображения лобби
-const Lobby = ({ lobby }) => {
-  const { creator, max_turn_time, players, max_players } = lobby;
-
-  return (
-    <div className="lobby">
-      {/* Верхний div */}
-      <div className="lobby-top">
-        <p><b>{creator}'s lobby</b></p>
-        <p>Turn time: {max_turn_time}</p>
-      </div>
-
-      {/* Нижний div */}
-      <div className="lobby-bottom">
-        <p>{players} / {max_players} player</p>
-        <button className='join-btn'>Присоединиться</button>
-      </div>
-    </div>
-  );
-};
 
 // Основной компонент списка лобби
 export default function LobbyList() {
