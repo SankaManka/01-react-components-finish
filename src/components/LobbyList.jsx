@@ -1,24 +1,20 @@
 import { useState, useEffect } from 'react';
 
 const Lobby = ({ lobby }) => {
-  const { user_id, time, player_in_lobby, max_players, game_started } = lobby;
+  const { creator, max_turn_time, players, max_players } = lobby;
 
   return (
     <div className="lobby">
       {/* Верхний div */}
       <div className="lobby-top">
-        <p>User ID: {user_id}</p>
-        <p>Turn time: {time}</p>
+        <p><b>{creator}'s lobby</b></p>
+        <p>Turn time: {max_turn_time}</p>
       </div>
 
       {/* Нижний div */}
       <div className="lobby-bottom">
-        <p>{player_in_lobby} / {max_players} игроков</p>
-        {game_started ? (
-          <p>Game started</p>
-        ) : (
-          <button>Присоединиться</button>
-        )}
+        <p>{players} / {max_players} player</p>
+        <button className='join-btn'>Присоединиться</button>
       </div>
     </div>
   );
@@ -68,8 +64,7 @@ export default function LobbyList() {
   }, []);
 
   return (
-    <section>
-      <h2>Список лобби</h2>
+    <section className='lobby-parent'>
       {lobbies.length > 0 ? (
         lobbies.map((lobby) => (
           <Lobby key={lobby.id} lobby={lobby} />
@@ -80,13 +75,7 @@ export default function LobbyList() {
 
       {/* Добавление нового лобби */}
       <div>
-        <input
-          type="text"
-          value={newLobbyName}
-          onChange={(e) => setNewLobbyName(e.target.value)}
-          placeholder="Введите название лобби"
-        />
-        <button onClick={createLobby}>Создать лобби</button>
+        <button onClick={createLobby} className='create-lobby-btn'>Создать лобби</button>
       </div>
     </section>
   );

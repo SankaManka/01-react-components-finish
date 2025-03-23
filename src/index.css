@@ -120,3 +120,94 @@ p {
   box-sizing: border-box;
   padding: 23px;
 }
+
+.lobby-parent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lobbies {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.lobby-heading {
+  font-family: "Advent Pro", sans-serif;
+  font-size: 36px;
+  font-weight: 500;
+  letter-spacing: 5px;
+  color: #205115;
+}
+
+/* lobby */
+
+.lobby {
+  width: 682px;
+  height: 116px;
+  background-color: #436F39;
+  border-radius: 24px;
+  box-shadow: 0 4px 5.5px 0 #20511520;
+  margin-bottom: 19px;
+  box-sizing: border-box;
+  padding: 23px 31px 24px 28px;
+  gap: 21px;
+  display: flex;
+  flex-direction: column;
+  background-image: url(/public/lobby-cell-background.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.lobby-top {
+  display: flex;
+  justify-content: space-between;
+}
+
+.lobby-top p{
+  padding: 0;
+  margin: 0;
+  color: #F3F8E8;
+}
+
+.lobby-bottom {
+  display: flex;
+  justify-content: space-between;
+}
+
+.lobby-bottom p{
+  padding: 0;
+  margin: 0;
+  color: #F3F8E8;
+}
+
+.join-btn, .create-lobby-btn {
+  width: 168px;
+  height: 30px;
+  background-color: #ED1D24;
+  border-radius: 10px;
+  border: none;
+  color: #F3F8E8;
+  font-family: 'Advent Pro';
+  font-size: 18px;
+  letter-spacing: 1px;
+  line-height: 22px;
+  cursor: pointer;
+}
+
+/* create-lobby-btn */
+
+/* .create-lobby-btn {
+  width: 168px;
+  height: 30px;
+  background-color: #ED1D24;
+  border-radius: 10px;
+  border: none;
+  color: #F3F8E8;
+  font-family: 'Advent Pro';
+  font-size: 18px;
+  letter-spacing: 1px;
+  line-height: 22px;
+  cursor: pointer;
+} */
