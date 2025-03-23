@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 
-const JoinLobbyModal = ({ isOpen, onClose, id_lobby }) => {
-  const [password, setPassword] = useState('');
+const JoinLobbyModal = ({ isOpen, onClose, lobby_id }) => {
+  const [lobby_password, setPassword] = useState('');
 
   const handleJoinLobby = async () => {
-    if (!password) {
+    if (!lobby_password) {
       alert('Пожалуйста, введите пароль.');
       return;
     }
@@ -16,8 +16,8 @@ const JoinLobbyModal = ({ isOpen, onClose, id_lobby }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          id_lobby: id_lobby,
-          password: password,
+            lobby_id: lobby_id,
+            lobby_password: lobby_password,
         }),
       });
 
@@ -44,7 +44,7 @@ const JoinLobbyModal = ({ isOpen, onClose, id_lobby }) => {
         <p>Введите пароль для лобби:</p>
         <input
           type="password"
-          value={password}
+          value={lobby_password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Пароль лобби"
           className='lobby-passwd-input'
