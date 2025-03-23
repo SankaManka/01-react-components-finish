@@ -5,17 +5,34 @@ export default function Register({ toggleForm }) {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (login.length >= 4 && password.length >= 6) {
       console.log('Логин:', login);
       console.log('Пароль:', password);
 
-      // Редирект на страницу аккаунта после успешной регистрации
-      window.location.href = '/account';
+      try {
+        const response = await fetch('/api/registration', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ login, password })
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'success') {
+          window.location.href = '/account';
+        } else {
+          alert('Ошибка регистрации: ' + (data.message || 'Неизвестная ошибка'));
+        }
+      } catch (error) {
+        alert('Ошибка сети: ' + error.message);
+      }
     } else {
-      alert('Ошибка! Логин и пароль должны быть не менее 6 символов.');
+      alert('Ошибка! Логин должен быть не менее 4 символов, пароль — не менее 6.');
     }
   };
 
@@ -32,7 +49,7 @@ export default function Register({ toggleForm }) {
             value={login}
             placeholder="login"
             onChange={(e) => setLogin(e.target.value)}
-            minLength="6"
+            minLength="4"
             maxLength="20"
             pattern="^[a-zA-Z0-9]+$"
             required
@@ -53,7 +70,7 @@ export default function Register({ toggleForm }) {
         <button type="submit" className={styles.registrationBtn}>Зарегистрироваться</button>
         <p>
           Есть аккаунт?{' '}
-          <a href="" className={styles.enterLink} onClick={(e) => { e.preventDefault(); toggleForm(); }}>Войти</a>
+          <a href="#" className={styles.enterLink} onClick={(e) => { e.preventDefault(); toggleForm(); }}>Войти</a>
         </p>
       </form>
     </section>
