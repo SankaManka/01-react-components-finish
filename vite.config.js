@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8800', // Адрес бэка
+        target: 'http://91.186.199.95:5173/', // Адрес бэка
         changeOrigin: true, // Меняет origin запроса (важно для CORS)
         secure: false, // Выключаем проверку SSL (если локально)
         ws: true,
