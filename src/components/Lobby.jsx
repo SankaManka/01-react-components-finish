@@ -1,39 +1,33 @@
-import React, { useState } from 'react';
-import JoinLobbyModal from './JoinLobby';
+import { useState } from 'react';
+import JoinLobbyModal from './JoinLobbyModal';
+import '../index.css';
 
-const Lobby = ({ lobby }) => {
+export default function Lobby({ lobby }) {
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
 
-  if (!lobby || !lobby.id_lobby) {
-    return null;
-  }
-
-  const { creator, max_turn_time, players, max_players, id_lobby } = lobby;
+  if (!lobby) return null;
 
   return (
     <div className="lobby">
-      {/* Верхний div */}
       <div className="lobby-top">
-        <p><b>{creator}'s lobby</b></p>
-        <p>Turn time: {max_turn_time}</p>
+        <p><b>{lobby.creator}</b>'s lobby</p>
+        <p>Время хода: {lobby.max_turn_time} сек</p>
       </div>
-
-      {/* Нижний div */}
       <div className="lobby-bottom">
-        <p>{players} / {max_players} player</p>
-        <button className='join-btn' onClick={() => setIsJoinModalOpen(true)}>
+        <p>Игроков: {lobby.players}/{lobby.max_players}</p>
+        <button 
+          className="join-btn"
+          onClick={() => setIsJoinModalOpen(true)}
+        >
           Присоединиться
         </button>
       </div>
 
-      {/* Модальное окно для присоединения к лобби */}
       <JoinLobbyModal
         isOpen={isJoinModalOpen}
         onClose={() => setIsJoinModalOpen(false)}
-        id_lobby={id_lobby}
+        lobbyId={lobby.id_lobby}
       />
     </div>
   );
 };
-
-export default Lobby;

@@ -92,6 +92,7 @@ p {
   background-image: url(/public/account-background.svg);
   background-repeat: no-repeat;
   background-position: center;
+  text-align: center;
 }
 
 .heading-account {
@@ -110,6 +111,12 @@ p {
   color: #205115;
 }
 
+.account-header {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+}
+
 .lobbies-container {
   width: 727px;
   height: 643px;
@@ -120,6 +127,7 @@ p {
   box-sizing: border-box;
   padding: 23px;
   overflow-y: scroll;
+  text-align: center;
 }
 
 .lobby-parent {
@@ -140,6 +148,7 @@ p {
   font-weight: 500;
   letter-spacing: 5px;
   color: #205115;
+  margin-bottom: 10px;
 }
 
 /* lobby */
