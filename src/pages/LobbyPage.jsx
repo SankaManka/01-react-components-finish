@@ -7,16 +7,23 @@ import '../index.css';
 import RulesModal from '../components/RulesModal';
 
 export default function LobbyPage() {
-  const user = useAuthStore(state => state.user);
+  const { user, isLoading, checkAuth } = useAuthStore();
   const navigate = useNavigate();
 
-  // Проверка авторизации при загрузке
   useEffect(() => {
-    if (!user) {
-      navigate('/');
-    }
-  }, [user, navigate]);
+    console.log('Starting lobby auth check...');
+    checkAuth().then(isAuthenticated => {
+      console.log('Lobby auth check result:', isAuthenticated);
+      if (!isAuthenticated) {
+        console.log('Redirecting to auth page...');
+        navigate('/');
+      }
+    });
+  }, [checkAuth, navigate]);
 
+  console.log('LobbyPage render, user:', user, 'isLoading:', isLoading);
+
+  if (isLoading) return <div>Loading...</div>;
   return (
     <main className='account-lobbie'>
       <div className='account-header'>
