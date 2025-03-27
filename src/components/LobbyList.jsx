@@ -16,11 +16,16 @@ export default function LobbyList() {
     try {
       const response = await fetch('/api/lobbies');
       const data = await response.json();
-      setLobbies(data);
+      
+      // Фильтруем лобби с игроками
+      const filteredLobbies = data.filter(lobby => lobby.players > 0);
+      
+      setLobbies(filteredLobbies);
     } catch (error) {
       console.error('Ошибка загрузки лобби:', error);
     }
   };
+
 
   useEffect(() => {
     fetchLobbies();
@@ -43,7 +48,7 @@ export default function LobbyList() {
             />
           ))
         ) : (
-          <p>Нет активных лобби</p>
+          <p>Нет активных лобби с игроками</p> // Обновляем текст сообщения
         )}
       </div>
 

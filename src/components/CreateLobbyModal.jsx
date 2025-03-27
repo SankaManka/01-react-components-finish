@@ -24,7 +24,7 @@ export default function CreateLobbyModal({ isOpen, onClose, navigate }) {
       if (response.ok) {
         const newLobby = await response.json();
         onClose(); // Закрываем модальное окно
-        // navigate(`/game/${newLobby.id_lobby}`);
+        navigate(`/game/${newLobby.lobby_id}/${newLobby.player_id}`);
       } else {
         alert('Ошибка при создании лобби');
       }
