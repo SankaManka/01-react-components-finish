@@ -1,53 +1,84 @@
-import { useState, useEffect, useRef } from 'react';
-import '../index.css'
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import '../index.css';
 
 export default function EndTurn() {
-  const [timeLeft, setTimeLeft] = useState(300); // 5 минут в секундах
-  const [isRunning, setIsRunning] = useState(false);
-  const intervalRef = useRef(null);
+  const { lobby_id } = useParams();
+  const [gameState, setGameState] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Форматирование времени в MM:SS
+  // Форматирование времени
   const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
+    const safeSeconds = Math.max(0, Math.floor(seconds)) || 0;
+    const mins = Math.floor(safeSeconds / 60);
+    const secs = safeSeconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Запуск таймера
-  const startTimer = () => {
-    setIsRunning(true);
+  // Получение названия фазы
+  const getPhaseName = (phaseNumber) => {
+    switch(phaseNumber) {
+      case 1: return 'Фаза развития';
+      case 3: return 'Фаза питания';
+    }
   };
 
-  // Завершение хода
-  const endTurn = () => {
-    setIsRunning(false);
-    setTimeLeft(300); // Сброс до 5 минут
+  // Запрос данных с сервера
+  const fetchGameState = async () => {
+    try {
+      const response = await fetch(`/api/game/get-lobby-state/${lobby_id}`);
+      if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+      
+      const data = await response.json();
+      
+      if (data.phase_timing && typeof data.phase === 'number' && typeof data.round === 'number') {
+        setGameState({
+          round: data.round,
+          phase: data.phase,
+          phaseName: getPhaseName(data.phase),
+          remainingTime: data.phase_timing.remaining,
+          maxDuration: data.phase_timing.max_duration
+        });
+      } else {
+        throw new Error('Некорректные данные игры');
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error('Ошибка:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    if (isRunning && timeLeft > 0) {
-      intervalRef.current = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
-      }, 1000);
-    }
-    
-    return () => clearInterval(intervalRef.current);
-  }, [isRunning, timeLeft]);
+    fetchGameState();
+    const interval = setInterval(fetchGameState, 1000);
+    return () => clearInterval(interval);
+  }, [lobby_id]);
+
+  if (loading) return <div className="loading">Загрузка...</div>;
+  if (error) return <div className="error">Ошибка: {error}</div>;
 
   return (
     <div className="countdown-container">
-      <div className="timer-display">Оставшееся время: {formatTime(timeLeft)}</div>
-      
-      <div className="controls">
-        {!isRunning ? (
-          <button onClick={startTimer} className="start-btn">
-            Старт (5:00)
-          </button>
-        ) : (
-          <button onClick={endTurn} className="end-btn">
-            Завершить ход
-          </button>
-        )}
+      {/* Блок с общей информацией */}
+      <div className="game-meta">
+        <div className="round-info">Раунд: {gameState.round}</div>
+        <div className="phase-info">{gameState.phaseName}</div>
+      </div>
+
+      {/* Блок с таймером */}
+      <div className="timer-display">
+        <div className="time-info">
+          <span>Осталось: {formatTime(gameState.remainingTime)}</span>
+        </div>
+        <button 
+          className="end-btn"
+          onClick={() => console.log('Завершение хода')}
+        >
+          Завершить ход
+        </button>
       </div>
     </div>
   );

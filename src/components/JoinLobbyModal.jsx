@@ -18,7 +18,8 @@ export default function JoinLobbyModal({ isOpen, onClose, lobbyId }) {
       });
 
       if (response.ok) {
-        navigate(`/game/${lobbyId}`); // Переход в игру
+        const joinLobby = await response.json();
+        navigate(`/game/${lobbyId}/${joinLobby.player_id}`); // Переход в игру
       } else {
         alert('Неверный пароль');
       }
