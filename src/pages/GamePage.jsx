@@ -119,11 +119,16 @@ export default function GamePage() {
           <OpponentHand />
           {/* Если у игроков есть животные, отрисовываем их как карты */}
           <div className="opponent-properties">
-            {lobbyState &&
+            
+          </div>
+        </div>
+        <div className="main-player-container">
+          <div className='main-player-properties'>
+          {lobbyState &&
               lobbyState.players.map(player => (
                 player.animals && Array.isArray(player.animals) && player.animals.length > 0 && (
                   <div key={player.id} className="player-animals">
-                    <h3>Игрок {player.id} ({player.color})</h3>
+                    {/* <h3>Игрок {player.id} ({player.color})</h3> */}
                     <div className="animals-cards">
                       {player.animals.map(animal => (
                         <CardAnimal
@@ -138,11 +143,6 @@ export default function GamePage() {
                 )
               ))
             }
-          </div>
-        </div>
-        <div className="main-player-container">
-          <div>
-            {/* Можно добавить информацию для главного игрока */}
           </div>
           <div className="main-player-deck">
             <PlayerHand />

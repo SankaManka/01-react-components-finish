@@ -380,12 +380,14 @@ p {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 127px;
+  gap: 113px;
 }
 
 .main-player-deck {
   display: flex;
   align-items: flex-end;
+  min-height: 203px;
+  justify-content: flex-end;
 }
 
 .main-player-cards {
@@ -539,4 +541,25 @@ p {
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin-left: 8px;
+}
+
+.animals-cards {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 5px;
+}
+
+.main-player-properties {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 180px;
+}
+.empty {
+  min-width: 80%;
+}
+
+.opponent-properties {
+  height: 180px;
 }
