@@ -1,18 +1,11 @@
-// CardProperty.jsx
-import { useEffect, useRef } from 'react';
-import '../index.css';
-
 export default function CardProperty({ 
     name, 
     description, 
     foodValue, 
     isPredator,
     isSelected,
-    onClick,
-    card_instance_id
+    onClick
 }) {
-    const cardRef = useRef(null);
-    
     const cardName = name || 'Неизвестная карта';
     const cardDescription = description || 'Описание отсутствует';
     const displayFood = Number.isInteger(foodValue) ? foodValue : 0;
@@ -21,10 +14,9 @@ export default function CardProperty({
         <div 
             className={`card-property ${isPredator ? 'predator' : ''} ${isSelected ? 'selected' : ''}`}
             onClick={onClick}
-            ref={cardRef}
         >
             <section className='card-name-container'>
-                {displayFood > 0 && <div className='food-value'>🍗{displayFood}</div>}
+                {displayFood > 0 && <div className='food-value'>🍗 {displayFood}</div>}
                 <p className='card-name'>{cardName.toUpperCase()}</p>
             </section>
             <section className='card-description-container'>

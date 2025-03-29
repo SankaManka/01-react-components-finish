@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import CardProperty from './CardProperty';
 import { useParams } from 'react-router-dom';
 
-export default function PlayerHand() {
+export default function PlayerHand({ onPropertySelect }) {
   const { player_id, lobby_id } = useParams();
   const [hand, setHand] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,20 +14,17 @@ export default function PlayerHand() {
     setSelectedCardId(selectedCardId === cardId ? null : cardId);
   };
 
-  // Функция обновления состояния игры
   const fetchGameState = async () => {
     try {
       const response = await fetch(`/api/game/get-lobby-state/${lobby_id}`);
       if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
       const data = await response.json();
-      // Предполагается, что data содержит поле round
       setGameState(data);
     } catch (err) {
       console.error('Ошибка получения состояния игры:', err);
     }
   };
 
-  // Функция получения карт игрока
   const fetchPlayerHand = async () => {
     try {
       const response = await fetch(`/api/game/get-player-hand/${player_id}`);
@@ -45,12 +42,10 @@ export default function PlayerHand() {
     }
   };
 
-  // Запускаем первоначальную загрузку карт
   useEffect(() => {
     fetchPlayerHand();
   }, [player_id]);
 
-  // Запускаем получение состояния игры с периодическим обновлением
   useEffect(() => {
     fetchGameState();
     const interval = setInterval(fetchGameState, 1000);
@@ -58,7 +53,7 @@ export default function PlayerHand() {
   }, [lobby_id]);
 
   const handleAction = async (actionType) => {
-    // Проверяем, что действие выполняется в нужном раунде
+    // Проверяем, что действие выполняется только в фазе развития
     if (!gameState || gameState.phase !== 1) {
       alert('Действие можно выполнить только в фазе развития');
       return;
@@ -74,20 +69,22 @@ export default function PlayerHand() {
         }
         const data = await response.json();
         console.log("Ответ сервера:", data);
-
-        // После успешного запроса обновляем состояние игры и руку игрока
         fetchGameState();
         fetchPlayerHand();
       } catch (err) {
         console.error("Ошибка:", err);
       }
-    } else if (actionType === 'property') {
-      console.log(`Сыграть свойство для карты ${selectedCardId}`);
+    } else if (actionType === 'property' && selectedCardId) {
+      // Вместо прямого запроса передаём id выбранной карты родительскому компоненту
+      onPropertySelect(selectedCardId);
+      fetchGameState();
+      fetchPlayerHand();
+      console.log(`Карта свойства ${selectedCardId} выбрана, нажмите на животное для применения`);
     }
+    // Если действие было выполнено (или выбор сделан), сбрасываем выбор карты в руке
     setSelectedCardId(null);
   };
 
-  // Закрываем панель действий, если клик вне области карты
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (!e.target.closest('.card-property') && !e.target.closest('.card-actions')) {
@@ -115,7 +112,6 @@ export default function PlayerHand() {
             isSelected={selectedCardId === card.card_instance_id}
             card_instance_id={card.card_instance_id}
           />
-
           {selectedCardId === card.card_instance_id && (
             <div className="card-actions">
               <button onClick={() => handleAction('animal')}>Сыграть животное</button>

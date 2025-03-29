@@ -14,11 +14,36 @@ export default function GamePage() {
   const [countdown, setCountdown] = useState(null);
   const [playersReady, setPlayersReady] = useState(0);
   const [totalPlayers, setTotalPlayers] = useState(0);
-  const [lobbyState, setLobbyState] = useState(null); // Для получения данных из get-lobby-state
+  const [lobbyState, setLobbyState] = useState(null);
+  // Состояние для выбранной карты свойства из руки
+  const [propertyPlayCardId, setPropertyPlayCardId] = useState(null);
   const pollingInterval = useRef(null);
 
   const lobbyId = parseInt(lobby_id);
   const playerId = parseInt(player_id);
+
+  // Функция для обработки клика по карточке животного
+  const handleAnimalCardClick = async (animalId) => {
+    // Если не выбрана карта свойства — ничего не делаем
+    if (!propertyPlayCardId) return;
+    try {
+      const response = await fetch(`/api/game/play-property/${propertyPlayCardId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ animal_id: animalId })
+      });
+      const data = await response.json();
+      console.log('Ответ сервера на сыгранное свойство:', data);
+      // Сброс выбранной карты после удачного запроса
+      setPropertyPlayCardId(null);
+      // Обновление состояния лобби, если требуется
+      fetchLobbyState();
+    } catch (err) {
+      console.error('Ошибка при игре свойства:', err);
+    }
+  };
 
   // Запрос статуса игры для определения начала игры
   useEffect(() => {
@@ -28,7 +53,6 @@ export default function GamePage() {
         const data = await response.json();
 
         if (data.status === "ok") {
-          // Игра началась – прекращаем опрос
           setGameStatus('started');
           clearInterval(pollingInterval.current);
         } else {
@@ -43,35 +67,32 @@ export default function GamePage() {
       }
     };
 
-    // Первый запрос сразу при монтировании
     checkGameStatus();
 
-    // Настраиваем интервал только если игра еще не начата
     if (gameStatus !== 'started') {
       pollingInterval.current = setInterval(checkGameStatus, 3000);
     }
 
     return () => {
-      // Очищаем интервал при размонтировании
       if (pollingInterval.current) {
         clearInterval(pollingInterval.current);
       }
     };
   }, [lobbyId, gameStatus]);
 
-  // Дополнительный запрос для получения состояния лобби, включая информацию о животных
-  useEffect(() => {
-    const fetchLobbyState = async () => {
-      try {
-        const response = await fetch(`/api/game/get-lobby-state/${lobby_id}`);
-        if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
-        const data = await response.json();
-        setLobbyState(data);
-      } catch (err) {
-        console.error('Ошибка получения состояния лобби:', err);
-      }
-    };
+  // Запрос состояния лобби
+  const fetchLobbyState = async () => {
+    try {
+      const response = await fetch(`/api/game/get-lobby-state/${lobby_id}`);
+      if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+      const data = await response.json();
+      setLobbyState(data);
+    } catch (err) {
+      console.error('Ошибка получения состояния лобби:', err);
+    }
+  };
 
+  useEffect(() => {
     fetchLobbyState();
     const interval = setInterval(fetchLobbyState, 1000);
     return () => clearInterval(interval);
@@ -89,15 +110,14 @@ export default function GamePage() {
   if (gameStatus === 'waiting') {
     return (
       <div className="game-container">
-          <div>
-            <LeaveLobby />
-          </div>
+        <div>
+          <LeaveLobby />
+        </div>
         <div className="waiting-content">
           <h2>Ожидание начала игры</h2>
           <div className="players-status">
-            Готовы: 1 / 2 игроков
+            Готовы: {playersReady} / {totalPlayers} игроков
           </div>
-
           {countdown && (
             <div className="countdown">
               Игра начнётся через: {countdown} сек.
@@ -111,66 +131,80 @@ export default function GamePage() {
 
   return (
     <main className="game-container">
-  <LeaveLobby />
-  <div className="game-field">
-    <div className="opponent-section">
-      <OpponentHand />
-      {/* Карты противника */}
-      <div className="opponent-properties">
-        {lobbyState &&
-          lobbyState.players
-            .filter(player => player.id !== playerId)
-            .map(player => (
-              player.animals && Array.isArray(player.animals) && player.animals.length > 0 && (
-                <div key={player.id} className="player-animals">
-                  <div className="animals-cards">
-                    {player.animals.map(animal => (
-                      <CardAnimal
-                        key={animal.id}
-                        id={animal.id}
-                        food={animal.food}
-                        properties={animal.properties}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )
-            ))
-        }
-      </div>
-    </div>
-    <div className="main-player-container">
-      <div className="main-player-properties">
-        {/* Карты вашего игрока */}
-        {lobbyState &&
-          lobbyState.players
-            .filter(player => player.id === playerId)
-            .map(player => (
-              player.animals && Array.isArray(player.animals) && player.animals.length > 0 && (
-                <div key={player.id} className="player-animals">
-                  <div className="animals-cards">
-                    {player.animals.map(animal => (
-                      <CardAnimal
-                        key={animal.id}
-                        id={animal.id}
-                        food={animal.food}
-                        properties={animal.properties}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )
-            ))
-        }
-      </div>
-      <div className="main-player-deck">
-        <PlayerHand />
-        <div className="end-turn-button-container">
-          <EndTurn />
+      <LeaveLobby />
+      <div className="game-field">
+        <div className="opponent-section">
+          <OpponentHand />
+          <div className="opponent-properties">
+            {lobbyState &&
+              lobbyState.players
+                .filter(player => player.id !== playerId)
+                .map(player => (
+                  player.animals &&
+                  Array.isArray(player.animals) &&
+                  player.animals.length > 0 && (
+                    <div key={player.id} className="player-animals">
+                      <div className="animals-cards">
+                        {player.animals.map(animal => (
+                          // Если пользователь уже выбрал карту свойства,
+                          // кликая по карточке животного вызываем handleAnimalCardClick
+                          <div 
+                            key={animal.id} 
+                            onClick={() => propertyPlayCardId && handleAnimalCardClick(animal.id)}
+                          >
+                            <CardAnimal
+                              id={animal.id}
+                              food={animal.food}
+                              properties={animal.properties}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                ))
+            }
+          </div>
+        </div>
+        <div className="main-player-container">
+          <div className="main-player-properties">
+            {lobbyState &&
+              lobbyState.players
+                .filter(player => player.id === playerId)
+                .map(player => (
+                  player.animals &&
+                  Array.isArray(player.animals) &&
+                  player.animals.length > 0 && (
+                    <div key={player.id} className="player-animals">
+                      <div className="animals-cards">
+                        {player.animals.map(animal => (
+                          // Также можно разрешить выбор и своих животных, если это нужно
+                          <div 
+                            key={animal.id} 
+                            onClick={() => propertyPlayCardId && handleAnimalCardClick(animal.id)}
+                          >
+                            <CardAnimal
+                              id={animal.id}
+                              food={animal.food}
+                              properties={animal.properties}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                ))
+            }
+          </div>
+          <div className="main-player-deck">
+            {/* Передаём колбэк для выбора карты свойства */}
+            <PlayerHand onPropertySelect={(cardId) => setPropertyPlayCardId(cardId)} />
+            <div className="end-turn-button-container">
+              <EndTurn />
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-</main>
+    </main>
   );
 }
