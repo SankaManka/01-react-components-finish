@@ -1,16 +1,16 @@
-import { useEffect } from 'react';
 import '../index.css';
 
-export default function CardAnimal({ position, total }) {
-    // Анимация для распределения карт
-    const getRotation = () => {
-        const middle = total / 2;
-        return (position - middle) * 2;
-    };
+export default function CardAnimal({ id, food }) {
+  const getRotation = () => {
+    // Здесь можно реализовать логику поворота, если понадобится
+    return 0;
+  };
 
-    return (
-        <div className="card-animal">
-            <div className="card-back"></div>
-        </div>
-    );
+  return (
+    <div className="card-animal" style={{ transform: `rotate(${getRotation()}deg)` }}>
+      <div className="card-back">
+        <div className="animal-food">Еда: {food}</div>
+      </div>
+    </div>
+  );
 }

@@ -1,11 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 import LeaveLobby from "../components/LeaveLobby";
-import CardAnimal from "../components/CardAnimal";
+import AnimalWithPropertyBadge from "../components/AnimalWithPropertyBadge";
 import CardProperty from "../components/CardProperty";
 import PlayerHand from "../components/PlayerHand";
 import EndTurn from "../components/EndTurn";
 import OpponentHand from "../components/OpponentHand";
-import { useParams } from 'react-router-dom';
 import '../index.css';
 
 export default function GamePage() {
@@ -15,16 +15,14 @@ export default function GamePage() {
   const [playersReady, setPlayersReady] = useState(0);
   const [totalPlayers, setTotalPlayers] = useState(0);
   const [lobbyState, setLobbyState] = useState(null);
-  // Состояние для выбранной карты свойства из руки
   const [propertyPlayCardId, setPropertyPlayCardId] = useState(null);
+  const [playerHand, setPlayerHand] = useState([]);
   const pollingInterval = useRef(null);
 
   const lobbyId = parseInt(lobby_id);
   const playerId = parseInt(player_id);
 
-  // Функция для обработки клика по карточке животного
   const handleAnimalCardClick = async (animalId) => {
-    // Если не выбрана карта свойства — ничего не делаем
     if (!propertyPlayCardId) return;
     try {
       const response = await fetch(`/api/game/play-property/${propertyPlayCardId}`, {
@@ -34,18 +32,15 @@ export default function GamePage() {
         },
         body: JSON.stringify({ animal_id: animalId })
       });
-      const data = await response.json();
-      console.log('Ответ сервера на сыгранное свойство:', data);
-      // Сброс выбранной карты после удачного запроса
-      setPropertyPlayCardId(null);
-      // Обновление состояния лобби, если требуется
+      await response.json();
       fetchLobbyState();
+      fetchPlayerHand();
+      setPropertyPlayCardId(null);
     } catch (err) {
       console.error('Ошибка при игре свойства:', err);
     }
   };
 
-  // Запрос статуса игры для определения начала игры
   useEffect(() => {
     const checkGameStatus = async () => {
       try {
@@ -80,7 +75,6 @@ export default function GamePage() {
     };
   }, [lobbyId, gameStatus]);
 
-  // Запрос состояния лобби
   const fetchLobbyState = async () => {
     try {
       const response = await fetch(`/api/game/get-lobby-state/${lobby_id}`);
@@ -92,11 +86,29 @@ export default function GamePage() {
     }
   };
 
+  const fetchPlayerHand = async () => {
+    try {
+      const response = await fetch(`/api/game/get-player-hand/${playerId}`);
+      if (!response.ok) throw new Error('Ошибка загрузки карт');
+      const data = await response.json();
+      if (data.status === "ok" && Array.isArray(data.cards)) {
+        setPlayerHand(data.cards);
+      }
+    } catch (err) {
+      console.error('Ошибка при загрузке руки:', err);
+    }
+  };
+
   useEffect(() => {
-    fetchLobbyState();
-    const interval = setInterval(fetchLobbyState, 1000);
+    const updateData = () => {
+      fetchLobbyState();
+      fetchPlayerHand();
+    };
+
+    updateData();
+    const interval = setInterval(updateData, 1000);
     return () => clearInterval(interval);
-  }, [lobby_id]);
+  }, [lobby_id, playerId]);
 
   if (gameStatus === 'checking') {
     return (
@@ -116,7 +128,7 @@ export default function GamePage() {
         <div className="waiting-content">
           <h2>Ожидание начала игры</h2>
           <div className="players-status">
-            Готовы: {playersReady} / {totalPlayers} игроков
+            Готовы: 1 / 2 игроков
           </div>
           {countdown && (
             <div className="countdown">
@@ -146,16 +158,15 @@ export default function GamePage() {
                     <div key={player.id} className="player-animals">
                       <div className="animals-cards">
                         {player.animals.map(animal => (
-                          // Если пользователь уже выбрал карту свойства,
-                          // кликая по карточке животного вызываем handleAnimalCardClick
-                          <div 
-                            key={animal.id} 
+                          <div
+                            key={animal.id}
                             onClick={() => propertyPlayCardId && handleAnimalCardClick(animal.id)}
                           >
-                            <CardAnimal
+                            <AnimalWithPropertyBadge
                               id={animal.id}
                               food={animal.food}
                               properties={animal.properties}
+                              onClick={() => propertyPlayCardId && handleAnimalCardClick(animal.id)}
                             />
                           </div>
                         ))}
@@ -178,15 +189,15 @@ export default function GamePage() {
                     <div key={player.id} className="player-animals">
                       <div className="animals-cards">
                         {player.animals.map(animal => (
-                          // Также можно разрешить выбор и своих животных, если это нужно
-                          <div 
-                            key={animal.id} 
+                          <div
+                            key={animal.id}
                             onClick={() => propertyPlayCardId && handleAnimalCardClick(animal.id)}
                           >
-                            <CardAnimal
+                            <AnimalWithPropertyBadge
                               id={animal.id}
                               food={animal.food}
                               properties={animal.properties}
+                              onClick={() => propertyPlayCardId && handleAnimalCardClick(animal.id)}
                             />
                           </div>
                         ))}
@@ -197,8 +208,12 @@ export default function GamePage() {
             }
           </div>
           <div className="main-player-deck">
-            {/* Передаём колбэк для выбора карты свойства */}
-            <PlayerHand onPropertySelect={(cardId) => setPropertyPlayCardId(cardId)} />
+            <PlayerHand
+              onPropertySelect={setPropertyPlayCardId}
+              playerHand={playerHand}
+              fetchLobbyState={fetchLobbyState}
+              fetchPlayerHand={fetchPlayerHand}
+            />
             <div className="end-turn-button-container">
               <EndTurn />
             </div>
