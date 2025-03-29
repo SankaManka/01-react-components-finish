@@ -593,3 +593,35 @@ p {
   height: 48vh;
   justify-content: flex-start;
 }
+
+.property-name-container {
+  /* width: 121px;
+  height: 34px !important;
+  text-align: center;
+  background-color: #CDE7CA;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border: 4px solid #205115;
+  border-bottom: none;
+  margin-bottom: -10px; */
+}
+
+.property-name {
+  font-family: 'Advent pro';
+  font-size: 14px;
+  text-transform: uppercase;
+  color: #205115;
+  width: 121px;
+  height: 34px !important;
+  text-align: center;
+  background-color: #CDE7CA;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border: 4px solid #205115;
+  border-bottom: none;
+  margin-bottom: -10px;
+}
+.animal-with-property-badge {
+  display: flex;
+  flex-direction: column;
+}
