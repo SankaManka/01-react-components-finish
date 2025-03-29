@@ -89,6 +89,9 @@ export default function GamePage() {
   if (gameStatus === 'waiting') {
     return (
       <div className="game-container">
+          <div>
+            <LeaveLobby />
+          </div>
         <div className="waiting-content">
           <h2>Ожидание начала игры</h2>
           <div className="players-status">
@@ -100,9 +103,6 @@ export default function GamePage() {
               Игра начнётся через: {countdown} сек.
             </div>
           )}
-          <div>
-            <LeaveLobby />
-          </div>
           <div className="loader"></div>
         </div>
       </div>
@@ -111,47 +111,66 @@ export default function GamePage() {
 
   return (
     <main className="game-container">
-      <div>
-        <LeaveLobby />
-      </div>
-      <div className="game-field">
-        <div className="opponent-section">
-          <OpponentHand />
-          {/* Если у игроков есть животные, отрисовываем их как карты */}
-          <div className="opponent-properties">
-            
-          </div>
-        </div>
-        <div className="main-player-container">
-          <div className='main-player-properties'>
-          {lobbyState &&
-              lobbyState.players.map(player => (
-                player.animals && Array.isArray(player.animals) && player.animals.length > 0 && (
-                  <div key={player.id} className="player-animals">
-                    {/* <h3>Игрок {player.id} ({player.color})</h3> */}
-                    <div className="animals-cards">
-                      {player.animals.map(animal => (
-                        <CardAnimal
-                          key={animal.id}
-                          id={animal.id}
-                          food={animal.food}
-                          properties={animal.properties}
-                        />
-                      ))}
-                    </div>
+  <LeaveLobby />
+  <div className="game-field">
+    <div className="opponent-section">
+      <OpponentHand />
+      {/* Карты противника */}
+      <div className="opponent-properties">
+        {lobbyState &&
+          lobbyState.players
+            .filter(player => player.id !== playerId)
+            .map(player => (
+              player.animals && Array.isArray(player.animals) && player.animals.length > 0 && (
+                <div key={player.id} className="player-animals">
+                  <div className="animals-cards">
+                    {player.animals.map(animal => (
+                      <CardAnimal
+                        key={animal.id}
+                        id={animal.id}
+                        food={animal.food}
+                        properties={animal.properties}
+                      />
+                    ))}
                   </div>
-                )
-              ))
-            }
-          </div>
-          <div className="main-player-deck">
-            <PlayerHand />
-            <div className="end-turn-button-container">
-              <EndTurn />
-            </div>
-          </div>
+                </div>
+              )
+            ))
+        }
+      </div>
+    </div>
+    <div className="main-player-container">
+      <div className="main-player-properties">
+        {/* Карты вашего игрока */}
+        {lobbyState &&
+          lobbyState.players
+            .filter(player => player.id === playerId)
+            .map(player => (
+              player.animals && Array.isArray(player.animals) && player.animals.length > 0 && (
+                <div key={player.id} className="player-animals">
+                  <div className="animals-cards">
+                    {player.animals.map(animal => (
+                      <CardAnimal
+                        key={animal.id}
+                        id={animal.id}
+                        food={animal.food}
+                        properties={animal.properties}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )
+            ))
+        }
+      </div>
+      <div className="main-player-deck">
+        <PlayerHand />
+        <div className="end-turn-button-container">
+          <EndTurn />
         </div>
       </div>
-    </main>
+    </div>
+  </div>
+</main>
   );
 }
