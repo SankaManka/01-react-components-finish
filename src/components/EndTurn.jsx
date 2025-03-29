@@ -8,10 +8,9 @@ export default function EndTurn({ player_id }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isTurnEnded, setIsTurnEnded] = useState(false);
-  const [isPhaseEnded, setIsPhaseEnded] = useState(false);
-  const [currentPlayer, setCurrentPlayer] = useState(null); // Текущий игрок
+  const [currentPlayer, setCurrentPlayer] = useState(null);
+  const [endedPhases, setEndedPhases] = useState(new Set()); // Храним завершенные фазы
 
-  // Форматирование времени
   const formatTime = (seconds) => {
     const safeSeconds = Math.max(0, Math.floor(seconds)) || 0;
     const mins = Math.floor(safeSeconds / 60);
@@ -19,7 +18,6 @@ export default function EndTurn({ player_id }) {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Получение названия фазы
   const getPhaseName = (phaseNumber) => {
     switch (phaseNumber) {
       case 1: return 'Фаза развития';
@@ -28,15 +26,13 @@ export default function EndTurn({ player_id }) {
     }
   };
 
-  // Запрос данных с сервера
   const fetchGameState = async () => {
     try {
       const response = await fetch(`/api/game/get-lobby-state/${lobby_id}`);
       if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
-      
       const data = await response.json();
 
-      if (data.phase_timing && typeof data.phase === 'number' && typeof data.round === 'number' && data.current_player) {
+      if (data.phase_timing && typeof data.phase === 'number' && typeof data.round === 'number') {
         setGameState({
           round: data.round,
           phase: data.phase,
@@ -44,7 +40,7 @@ export default function EndTurn({ player_id }) {
           remainingTime: data.phase_timing.remaining,
           maxDuration: data.phase_timing.max_duration
         });
-        setCurrentPlayer(data.current_player); // Обновляем текущего игрока
+        setCurrentPlayer(data.phase !== 1 ? data.current_player : null);
       } else {
         throw new Error('Некорректные данные игры');
       }
@@ -62,12 +58,13 @@ export default function EndTurn({ player_id }) {
     return () => clearInterval(interval);
   }, [lobby_id]);
 
+  // Сбрасываем завершение хода при смене игрока
   useEffect(() => {
-    setIsTurnEnded(false); // Сбрасываем завершение хода при смене игрока
-    setIsPhaseEnded(false); // Сбрасываем завершение фазы при смене фазы
-  }, [currentPlayer, gameState?.phase]);
+    if (gameState?.phase !== 1) {
+      setIsTurnEnded(false);
+    }
+  }, [currentPlayer]);
 
-  // Завершение хода
   const handleEndTurn = async () => {
     if (isTurnEnded || player_id !== currentPlayer) return;
 
@@ -77,29 +74,35 @@ export default function EndTurn({ player_id }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ player_id })
       });
-
       if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
-      
-      setIsTurnEnded(true); // Блокируем повторное нажатие
+      setIsTurnEnded(true);
     } catch (err) {
       console.error('Ошибка при завершении хода:', err);
     }
   };
 
-  // Завершение фазы
-  const handleEndPhase = () => {
-    if (isPhaseEnded) return;
-    setIsPhaseEnded(true);
-    console.log('Фаза завершена!');
+  const handleEndPhase = async () => {
+    const phaseKey = `${gameState.round}-${gameState.phase}`; // Уникальный ключ для фазы и раунда
+    if (endedPhases.has(phaseKey)) return;
+
+    try {
+      const response = await fetch(`/api/game/next-phase/${lobby_id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+      setEndedPhases(prev => new Set([...prev, phaseKey])); // Блокируем кнопку для текущей фазы
+    } catch (err) {
+      console.error('Ошибка при завершении фазы:', err);
+    }
   };
 
-  // Стили кнопок
-  const buttonStyleTurn = isTurnEnded || player_id !== currentPlayer 
+  const buttonStyleTurn = isTurnEnded || player_id !== currentPlayer
     ? { backgroundColor: '#ff4444', color: '#ffe6e6', cursor: 'not-allowed' }
     : {};
 
-  const buttonStylePhase = isPhaseEnded 
-    ? { backgroundColor: '#ff4444', color: '#ffe6e6', cursor: 'not-allowed' } 
+  const buttonStylePhase = endedPhases.has(`${gameState?.round}-${gameState?.phase}`)
+    ? { backgroundColor: '#ff4444', color: '#ffe6e6', cursor: 'not-allowed' }
     : {};
 
   if (loading) return <div className="loading">Загрузка...</div>;
@@ -118,25 +121,25 @@ export default function EndTurn({ player_id }) {
         </div>
 
         {gameState.phase !== 1 && (
-          <button 
-            className="end-btn"
-            onClick={handleEndTurn}
-            style={buttonStyleTurn}
-            disabled={isTurnEnded || player_id !== currentPlayer} 
-          >
-            {isTurnEnded ? 'Ход завершен' : 'Завершить ход'}
-          </button>
-        )}
+          <>
+            <button
+              className="end-btn"
+              onClick={handleEndTurn}
+              style={buttonStyleTurn}
+              disabled={isTurnEnded || player_id !== currentPlayer}
+            >
+              Завершить ход
+            </button>
 
-        {gameState.phase !== 1 && (
-          <button 
-            className="change-phase-btn"
-            onClick={handleEndPhase}
-            style={buttonStylePhase}
-            disabled={isPhaseEnded}
-          >
-            {isPhaseEnded ? 'Фаза завершена' : 'Завершить фазу'}
-          </button>
+            <button
+              className="change-phase-btn"
+              onClick={handleEndPhase}
+              style={buttonStylePhase}
+              disabled={endedPhases.has(`${gameState.round}-${gameState.phase}`)}
+            >
+              Завершить фазу
+            </button>
+          </>
         )}
       </div>
     </div>
