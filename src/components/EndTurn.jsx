@@ -21,6 +21,7 @@ export default function EndTurn() {
     switch(phaseNumber) {
       case 1: return 'Фаза развития';
       case 3: return 'Фаза питания';
+      default: return 'Неизвестная фаза';
     }
   };
 
@@ -68,17 +69,19 @@ export default function EndTurn() {
         <div className="phase-info">{gameState.phaseName}</div>
       </div>
 
-      {/* Блок с таймером */}
+      {/* Блок с таймером и кнопкой (если не Фаза развития) */}
       <div className="timer-display">
         <div className="time-info">
           <span>Осталось: {formatTime(gameState.remainingTime)}</span>
         </div>
-        <button 
-          className="end-btn"
-          onClick={() => console.log('Завершение хода')}
-        >
-          Завершить ход
-        </button>
+        {gameState.phase !== 1 && (
+          <button 
+            className="end-btn"
+            onClick={() => console.log('Завершение хода')}
+          >
+            Завершить ход
+          </button>
+        )}
       </div>
     </div>
   );
