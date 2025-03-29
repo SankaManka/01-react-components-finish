@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import '../index.css';
 
-export default function EndTurn() {
+export default function EndTurn({ player_id }) {
   const { lobby_id } = useParams();
   const [gameState, setGameState] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isPhaseEnded, setIsPhaseEnded] = useState(false);  // Состояние для отслеживания, завершена ли фаза
+  const [isTurnEnded, setIsTurnEnded] = useState(false);
+  const [isPhaseEnded, setIsPhaseEnded] = useState(false);
+  const [currentPlayer, setCurrentPlayer] = useState(null); // Текущий игрок
 
   // Форматирование времени
   const formatTime = (seconds) => {
@@ -19,10 +21,10 @@ export default function EndTurn() {
 
   // Получение названия фазы
   const getPhaseName = (phaseNumber) => {
-    switch(phaseNumber) {
+    switch (phaseNumber) {
       case 1: return 'Фаза развития';
       case 3: return 'Фаза питания';
-      // default: return 'Неизвестная фаза';
+      default: return 'Неизвестная фаза';
     }
   };
 
@@ -33,8 +35,8 @@ export default function EndTurn() {
       if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
       
       const data = await response.json();
-      
-      if (data.phase_timing && typeof data.phase === 'number' && typeof data.round === 'number') {
+
+      if (data.phase_timing && typeof data.phase === 'number' && typeof data.round === 'number' && data.current_player) {
         setGameState({
           round: data.round,
           phase: data.phase,
@@ -42,6 +44,7 @@ export default function EndTurn() {
           remainingTime: data.phase_timing.remaining,
           maxDuration: data.phase_timing.max_duration
         });
+        setCurrentPlayer(data.current_player); // Обновляем текущего игрока
       } else {
         throw new Error('Некорректные данные игры');
       }
@@ -60,24 +63,43 @@ export default function EndTurn() {
   }, [lobby_id]);
 
   useEffect(() => {
-    // Если фаза меняется, сбрасываем состояние кнопки
-    setIsPhaseEnded(false);
-  }, [gameState?.phase]);  // Сброс при изменении фазы
+    setIsTurnEnded(false); // Сбрасываем завершение хода при смене игрока
+    setIsPhaseEnded(false); // Сбрасываем завершение фазы при смене фазы
+  }, [currentPlayer, gameState?.phase]);
 
-  const handleEndPhase = () => {
-    if (isPhaseEnded) {
-      return;  // Если фаза уже завершена, не выполняем действия
+  // Завершение хода
+  const handleEndTurn = async () => {
+    if (isTurnEnded || player_id !== currentPlayer) return;
+
+    try {
+      const response = await fetch(`/api/game/switch-player/${lobby_id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ player_id })
+      });
+
+      if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+      
+      setIsTurnEnded(true); // Блокируем повторное нажатие
+    } catch (err) {
+      console.error('Ошибка при завершении хода:', err);
     }
-
-    setIsPhaseEnded(true);  // Фаза завершена
-    console.log('Фаза завершена!');
-    // Здесь можно выполнить запрос на сервер для завершения фазы, например:
-    // await fetch('/api/game/end-phase', { method: 'POST' });
   };
 
-  // Стиль кнопки, если фаза завершена
-  const buttonStyle = isPhaseEnded
-    ? { backgroundColor: '#ff4444', color: '#ffe6e6' }
+  // Завершение фазы
+  const handleEndPhase = () => {
+    if (isPhaseEnded) return;
+    setIsPhaseEnded(true);
+    console.log('Фаза завершена!');
+  };
+
+  // Стили кнопок
+  const buttonStyleTurn = isTurnEnded || player_id !== currentPlayer 
+    ? { backgroundColor: '#ff4444', color: '#ffe6e6', cursor: 'not-allowed' }
+    : {};
+
+  const buttonStylePhase = isPhaseEnded 
+    ? { backgroundColor: '#ff4444', color: '#ffe6e6', cursor: 'not-allowed' } 
     : {};
 
   if (loading) return <div className="loading">Загрузка...</div>;
@@ -85,41 +107,35 @@ export default function EndTurn() {
 
   return (
     <div className="countdown-container">
-      {/* Блок с общей информацией */}
       <div className="game-meta">
         <div className="round-info">Раунд: {gameState.round}</div>
         <div className="phase-info">{gameState.phaseName}</div>
       </div>
 
-      {/* Блок с таймером и кнопкой (если не Фаза развития) */}
       <div className="timer-display">
         <div className="time-info">
           <span>Осталось: {formatTime(gameState.remainingTime)}</span>
         </div>
+
         {gameState.phase !== 1 && (
           <button 
             className="end-btn"
-            onClick={() => console.log('Завершение хода')}
+            onClick={handleEndTurn}
+            style={buttonStyleTurn}
+            disabled={isTurnEnded || player_id !== currentPlayer} 
           >
-            Завершить ход
+            {isTurnEnded ? 'Ход завершен' : 'Завершить ход'}
           </button>
         )}
-        {gameState.phase !== 1 && !isPhaseEnded && (
+
+        {gameState.phase !== 1 && (
           <button 
             className="change-phase-btn"
             onClick={handleEndPhase}
-            style={buttonStyle}  // Применение стиля к кнопке
+            style={buttonStylePhase}
+            disabled={isPhaseEnded}
           >
-            Завершить фазу
-          </button>
-        )}
-        {gameState.phase !== 1 && isPhaseEnded && (
-          <button 
-            className="change-phase-btn"
-            disabled
-            style={buttonStyle}  // Применение стиля к кнопке
-          >
-            Фаза завершена
+            {isPhaseEnded ? 'Фаза завершена' : 'Завершить фазу'}
           </button>
         )}
       </div>

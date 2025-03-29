@@ -6,7 +6,10 @@ import CardProperty from "../components/CardProperty";
 import PlayerHand from "../components/PlayerHand";
 import EndTurn from "../components/EndTurn";
 import OpponentHand from "../components/OpponentHand";
+import FoodChip from '../components/FoodChip';
 import '../index.css';
+import CardAnimal from '../components/CardAnimal';
+import Deck from '../components/Deck';
 
 export default function GamePage() {
   const { lobby_id, player_id } = useParams();
@@ -177,6 +180,15 @@ export default function GamePage() {
             }
           </div>
         </div>
+        <div className='deck-parent-container'>
+          {lobbyState && <Deck deckCount={lobbyState.deck_count} />}
+        </div>
+            <div className='player-turn-status'>
+              <span>Ваш ход</span>
+            </div>
+        <div className='food-chip-parent-container'>
+          {lobbyState && <FoodChip currentFood={lobbyState.food.current} />}
+        </div>
         <div className="main-player-container">
           <div className="main-player-properties">
             {lobbyState &&
@@ -215,7 +227,7 @@ export default function GamePage() {
               fetchPlayerHand={fetchPlayerHand}
             />
             <div className="end-turn-button-container">
-              <EndTurn />
+              <EndTurn player_id={playerId}/>
             </div>
           </div>
         </div>
