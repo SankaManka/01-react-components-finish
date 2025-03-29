@@ -425,7 +425,7 @@ p {
 
 .countdown-container {
   width: 254px;
-  height: 128px;
+  height: 100%;
   display: flex;
   flex-direction: column;
   
@@ -625,4 +625,20 @@ p {
 .animal-with-property-badge {
   display: flex;
   flex-direction: column;
+}
+
+.change-phase-btn {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 202px;
+  height: 38px;
+  border-radius: 12px;
+  background-color: #F3F8E8;
+  color: #205115;
+  font-family: 'Advent pro';
+  font-size: 18px;
+  letter-spacing: 1px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
 }

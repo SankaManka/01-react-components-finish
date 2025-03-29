@@ -7,6 +7,7 @@ export default function EndTurn() {
   const [gameState, setGameState] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isPhaseEnded, setIsPhaseEnded] = useState(false);  // Состояние для отслеживания, завершена ли фаза
 
   // Форматирование времени
   const formatTime = (seconds) => {
@@ -21,7 +22,7 @@ export default function EndTurn() {
     switch(phaseNumber) {
       case 1: return 'Фаза развития';
       case 3: return 'Фаза питания';
-      default: return 'Неизвестная фаза';
+      // default: return 'Неизвестная фаза';
     }
   };
 
@@ -58,6 +59,27 @@ export default function EndTurn() {
     return () => clearInterval(interval);
   }, [lobby_id]);
 
+  useEffect(() => {
+    // Если фаза меняется, сбрасываем состояние кнопки
+    setIsPhaseEnded(false);
+  }, [gameState?.phase]);  // Сброс при изменении фазы
+
+  const handleEndPhase = () => {
+    if (isPhaseEnded) {
+      return;  // Если фаза уже завершена, не выполняем действия
+    }
+
+    setIsPhaseEnded(true);  // Фаза завершена
+    console.log('Фаза завершена!');
+    // Здесь можно выполнить запрос на сервер для завершения фазы, например:
+    // await fetch('/api/game/end-phase', { method: 'POST' });
+  };
+
+  // Стиль кнопки, если фаза завершена
+  const buttonStyle = isPhaseEnded
+    ? { backgroundColor: '#ff4444', color: '#ffe6e6' }
+    : {};
+
   if (loading) return <div className="loading">Загрузка...</div>;
   if (error) return <div className="error">Ошибка: {error}</div>;
 
@@ -80,6 +102,24 @@ export default function EndTurn() {
             onClick={() => console.log('Завершение хода')}
           >
             Завершить ход
+          </button>
+        )}
+        {gameState.phase !== 1 && !isPhaseEnded && (
+          <button 
+            className="change-phase-btn"
+            onClick={handleEndPhase}
+            style={buttonStyle}  // Применение стиля к кнопке
+          >
+            Завершить фазу
+          </button>
+        )}
+        {gameState.phase !== 1 && isPhaseEnded && (
+          <button 
+            className="change-phase-btn"
+            disabled
+            style={buttonStyle}  // Применение стиля к кнопке
+          >
+            Фаза завершена
           </button>
         )}
       </div>
