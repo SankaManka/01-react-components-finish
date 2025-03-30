@@ -186,9 +186,9 @@ export default function GamePage() {
             <div className='player-turn-status'>
                   <span>{
                       lobbyState &&
-                      (lobbyState.currentPlayer === undefined ||
-                          lobbyState.currentPlayer === null ||
-                          lobbyState.currentPlayer === playerId)
+                      (lobbyState.current_player === undefined ||
+                          lobbyState.current_player === null ||
+                          lobbyState.current_player === playerId)
                           ? 'Ваш ход'
                           : 'Ход противника'}
                   </span>
