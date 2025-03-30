@@ -21,6 +21,7 @@ export default function GamePage() {
   const [propertyPlayCardId, setPropertyPlayCardId] = useState(null);
   const [playerHand, setPlayerHand] = useState([]);
   const pollingInterval = useRef(null);
+  const predatorAttackInProgressRef = useRef(false);
 
   const lobbyId = parseInt(lobby_id);
   const playerId = parseInt(player_id);
@@ -142,6 +143,8 @@ const handleSpyachka = async (animalId, e) => {
 };
 const handlePredatorAttack = async (targetAnimalId) => {
   if (!predatorMode.active || usedPredators.has(predatorMode.predatorId)) return;
+  if (predatorAttackInProgressRef.current) return;
+  predatorAttackInProgressRef.current = true;
 
   // Добавляем флаг для предотвращения множественных вызовов
   if (this.predatorAttackInProgress) return;
@@ -169,7 +172,7 @@ const handlePredatorAttack = async (targetAnimalId) => {
   } catch (err) {
     console.error('Ошибка при атаке хищника:', err);
   } finally {
-    this.predatorAttackInProgress = false;
+    predatorAttackInProgressRef.current = false;
     setPredatorMode({ active: false, predatorId: null });
   }
 };
