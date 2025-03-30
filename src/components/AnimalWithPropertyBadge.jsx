@@ -7,10 +7,8 @@ export default function AnimalWithPropertyBadge({ id, food, properties, onClick 
       {properties && properties.length > 0 && (
         <div className="property-name-container">
           {properties.map((prop, index) => (
-            <div className="property-name">
-              <div key={index}>
-                {prop.name}
-              </div>
+            <div className="property-name" key={index}>
+              {prop.name}
             </div>
           ))}
         </div>

@@ -24,6 +24,7 @@ export default function GamePage() {
 
   const lobbyId = parseInt(lobby_id);
   const playerId = parseInt(player_id);
+  const [usedTopatuns, setUsedTopatuns] = useState(new Set());
 
   const handleAnimalCardClick = async (animalId) => {
     if (!propertyPlayCardId) return;
@@ -78,6 +79,32 @@ const handleFeedAnimal = async (animalId, e) => {
     console.error('Ошибка при кормлении:', err);
   }
 };
+
+const handleTopatun = async (animalId, e) => {
+  e.stopPropagation();
+  try {
+    const response = await fetch(`/api/game/use-topatun/${animalId}`, {
+      method: 'POST'
+    });
+    if (response.ok) {
+      const data = await response.json();
+      if (data.status === 'error') {
+        alert(data.msg);
+      }
+      // Обновляем состояние после использования Топотуна
+      setUsedTopatuns(prev => new Set(prev).add(animalId));
+      fetchLobbyState();
+    }
+  } catch (err) {
+    console.error('Ошибка при использовании Топотуна:', err);
+  }
+};
+
+useEffect(() => {
+  if (lobbyState?.phase !== 3) {
+    setUsedTopatuns(new Set());
+  }
+}, [lobbyState?.phase]);
 
   useEffect(() => {
     const checkGameStatus = async () => {
@@ -274,12 +301,23 @@ if (lobbyState?.game_finished) {
                                               onClick={() => propertyPlayCardId && handleAnimalCardClick(animal.id)}
                                           />
                                           {lobbyState.phase === 3 && (
-                                              <button
-                                                  className="feed-button"
-                                                  onClick={(e) => handleFeedAnimal(animal.id, e)}
-                                              >
-                                                Покормить
-                                              </button>
+                                              <div className="animal-actions">
+                                                <button
+                                                    className="feed-button"
+                                                    onClick={(e) => handleFeedAnimal(animal.id, e)}
+                                                >
+                                                  Покормить
+                                                </button>
+                                                {animal.properties?.some(prop => prop.name === 'Топотун') && (
+                                                <button
+                                                  className="topatun-button"
+                                                  onClick={(e) => handleTopatun(animal.id, e)}
+                                                  disabled={usedTopatuns.has(animal.id)}
+                                                >
+                                                  Топотун
+                                                </button>
+                                              )}
+                                              </div>
                                           )}
                                         </div>
                                     ))}

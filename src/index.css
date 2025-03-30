@@ -735,3 +735,41 @@ p {
 .feed-button:hover {
   background-color: #45a049;
 }
+.animal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.feed-button, .topatun-button {
+  padding: 4px 8px;
+  font-size: 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.feed-button {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.feed-button:hover {
+  background-color: #45a049;
+}
+
+.topatun-button {
+  background-color: #ff9800;
+  color: white;
+}
+
+.topatun-button:hover {
+  background-color: #e68a00;
+}
+
+.topatun-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
