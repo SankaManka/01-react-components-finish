@@ -218,6 +218,27 @@ export default function GamePage() {
                                                         properties={animal.properties}
                                                         onClick={() => propertyPlayCardId && handleAnimalCardClick(animal.id)}
                                                     />
+                                                    {/* Добавляем кнопку "Покормить" только для животных текущего игрока */}
+                                                    {lobbyState.phase === 3 && (
+                                                        <button
+                                                            className="feed-button"
+                                                            onClick={async (e) => {
+                                                                e.stopPropagation(); // Предотвращаем всплытие события
+                                                                try {
+                                                                    const response = await fetch(`/api/game/take-food/${animal.id}`, {
+                                                                        method: 'POST'
+                                                                    });
+                                                                    if (response.ok) {
+                                                                        fetchLobbyState();
+                                                                    }
+                                                                } catch (err) {
+                                                                    console.error('Ошибка при кормлении:', err);
+                                                                }
+                                                            }}
+                                                        >
+                                                            Покормить
+                                                        </button>
+                                                    )}
                                                 </div>
                                             ))}
                                         </div>
