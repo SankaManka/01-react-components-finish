@@ -51,7 +51,10 @@ export default function GamePage() {
         method: 'POST'
       });
       if (response.ok) {
-        // Используем функциональное обновление состояния для сохранения порядка
+        const data = await response.json();
+        if (data.status === 'error') {
+            alert(data.msg);
+        }
         setLobbyState(prev => {
           if (!prev) return null;
           return {
