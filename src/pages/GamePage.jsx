@@ -25,6 +25,7 @@ export default function GamePage() {
   const lobbyId = parseInt(lobby_id);
   const playerId = parseInt(player_id);
   const [usedTopatuns, setUsedTopatuns] = useState(new Set());
+  const [usedSpyachkas, setUsedSpyachkas] = useState(new Set());
 
   const handleAnimalCardClick = async (animalId) => {
     if (!propertyPlayCardId) return;
@@ -99,7 +100,34 @@ const handleTopatun = async (animalId, e) => {
     console.error('Ошибка при использовании Топотуна:', err);
   }
 };
+const handleSpyachka = async (animalId, e) => {
+  e.stopPropagation();
+  if (usedSpyachkas.has(animalId)) return;
 
+  try {
+    const response = await fetch(`/api/game/use-spyachka/${animalId}`, {
+      method: 'POST'
+    });
+    if (response.ok) {
+      const data = await response.json();
+      if (data.status === 'error') {
+        alert(data.msg);
+      } else {
+        setUsedSpyachkas(prev => new Set(prev).add(animalId));
+      }
+      fetchLobbyState();
+    }
+  } catch (err) {
+    console.error('Ошибка при использовании Спячки:', err);
+  }
+};
+
+// Сброс при смене фазы
+useEffect(() => {
+  if (lobbyState?.phase !== 3) {
+    setUsedSpyachkas(new Set());
+  }
+}, [lobbyState?.phase]);
 useEffect(() => {
   if (lobbyState?.phase !== 3) {
     setUsedTopatuns(new Set());
@@ -309,14 +337,23 @@ if (lobbyState?.game_finished) {
                                                   Покормить
                                                 </button>
                                                 {animal.properties?.some(prop => prop.name === 'Топотун') && (
-                                                <button
-                                                  className="topatun-button"
-                                                  onClick={(e) => handleTopatun(animal.id, e)}
-                                                  disabled={usedTopatuns.has(animal.id)}
-                                                >
-                                                  Топотун
-                                                </button>
-                                              )}
+                                                    <button
+                                                        className="topatun-button"
+                                                        onClick={(e) => handleTopatun(animal.id, e)}
+                                                        disabled={usedTopatuns.has(animal.id)}
+                                                    >
+                                                      Топотун
+                                                    </button>
+                                                )}
+                                                {animal.properties?.some(prop => prop.name === 'Спячка') && (
+                                                    <button
+                                                        className="spyachka-button"
+                                                        onClick={(e) => handleSpyachka(animal.id, e)}
+                                                        disabled={usedSpyachkas.has(animal.id)}
+                                                    >
+                                                      Спячка
+                                                    </button>
+                                                )}
                                               </div>
                                           )}
                                         </div>
