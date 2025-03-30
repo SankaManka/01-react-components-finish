@@ -32,7 +32,7 @@ export default function GamePage() {
 });
 const activatePredatorMode = (animalId, e) => {
   e.stopPropagation();
-  if (usedPredators.has(animalId)) return;
+  if (usedPredators.has(animalId) || predatorMode.active) return;
   setPredatorMode({
     active: true,
     predatorId: animalId
@@ -141,9 +141,14 @@ const handleSpyachka = async (animalId, e) => {
   }
 };
 const handlePredatorAttack = async (targetAnimalId) => {
-  if (!predatorMode.active) return;
+  if (!predatorMode.active || usedPredators.has(predatorMode.predatorId)) return;
+
+  // Добавляем флаг для предотвращения множественных вызовов
+  if (this.predatorAttackInProgress) return;
+  this.predatorAttackInProgress = true;
 
   try {
+    console.log("Sending predator attack request");
     const response = await fetch(`/api/game/use-predator/${predatorMode.predatorId}`, {
       method: 'POST',
       headers: {
@@ -164,6 +169,7 @@ const handlePredatorAttack = async (targetAnimalId) => {
   } catch (err) {
     console.error('Ошибка при атаке хищника:', err);
   } finally {
+    this.predatorAttackInProgress = false;
     setPredatorMode({ active: false, predatorId: null });
   }
 };
@@ -330,8 +336,6 @@ if (lobbyState?.game_finished) {
                                             onClick={() => {
                                               if (predatorMode.active) {
                                                 handlePredatorAttack(animal.id);
-                                              } else if (propertyPlayCardId) {
-                                                handleAnimalCardClick(animal.id);
                                               }
                                             }}
                                             className={predatorMode.active ? 'attack-target' : ''}
@@ -340,8 +344,9 @@ if (lobbyState?.game_finished) {
                                               id={animal.id}
                                               food={animal.food}
                                               properties={animal.properties}
-                                              onClick={() => {
+                                              onClick={(e) => {
                                                 if (predatorMode.active) {
+                                                  e.stopPropagation(); // Добавляем stopPropagation
                                                   handlePredatorAttack(animal.id);
                                                 } else if (propertyPlayCardId) {
                                                   handleAnimalCardClick(animal.id);
