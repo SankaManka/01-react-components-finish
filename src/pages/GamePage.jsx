@@ -44,38 +44,40 @@ export default function GamePage() {
     }
   };
 
-  const handleFeedAnimal = async (animalId, e) => {
-    e.stopPropagation();
-    try {
-      const response = await fetch(`/api/game/take-food/${animalId}`, {
-        method: 'POST'
-      });
-      if (response.ok) {
-        const data = await response.json();
-        if (data.status === 'error') {
-            alert(data.msg);
-        }
-        setLobbyState(prev => {
-          if (!prev) return null;
-          return {
-            ...prev,
-            players: prev.players.map(player => ({
-              ...player,
-              animals: player.animals?.map(animal =>
+const handleFeedAnimal = async (animalId, e) => {
+  e.stopPropagation();
+  try {
+    const response = await fetch(`/api/game/take-food/${animalId}`, {
+      method: 'POST'
+    });
+    if (response.ok) {
+      const data = await response.json();
+      if (data.status === 'error') {
+          alert(data.msg);
+      }
+      // Обновляем только локальное состояние
+      setLobbyState(prev => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          players: prev.players.map(player => ({
+            ...player,
+            animals: player.animals
+              ?.map(animal =>
                 animal.id === animalId
                   ? {...animal, food: animal.food + 1}
                   : animal
               )
-            }))
-          };
-        });
-        // Полное обновление через секунду
-        setTimeout(fetchLobbyState, 1000);
-      }
-    } catch (err) {
-      console.error('Ошибка при кормлении:', err);
+              // Сортируем животных после обновления
+              .sort((a, b) => a.id - b.id)
+          }))
+        };
+      });
     }
-  };
+  } catch (err) {
+    console.error('Ошибка при кормлении:', err);
+  }
+};
 
   useEffect(() => {
     const checkGameStatus = async () => {
@@ -198,100 +200,104 @@ if (lobbyState?.game_finished) {
       <LeaveLobby />
       <div className="game-field">
         <div className="opponent-section">
-          <OpponentHand />
+          <OpponentHand/>
           <div className="opponent-properties">
             {lobbyState &&
-              lobbyState.players
-                .filter(player => player.id !== playerId)
-                .map(player => (
-                  player.animals &&
-                  Array.isArray(player.animals) &&
-                  player.animals.length > 0 && (
-                    <div key={player.id} className="player-animals">
-                      <div className="animals-cards">
-                        {player.animals.map(animal => (
-                          <div
-                            key={animal.id}
-                            onClick={() => propertyPlayCardId && handleAnimalCardClick(animal.id)}
-                          >
-                            <AnimalWithPropertyBadge
-                              id={animal.id}
-                              food={animal.food}
-                              properties={animal.properties}
-                              onClick={() => propertyPlayCardId && handleAnimalCardClick(animal.id)}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )
-                ))
+                lobbyState.players
+                    .filter(player => player.id !== playerId)
+                    .map(player => (
+                        player.animals &&
+                        Array.isArray(player.animals) &&
+                        player.animals.length > 0 && (
+                            <div key={player.id} className="player-animals">
+                              <div className="animals-cards">
+                                {player.animals
+                                    .sort((a, b) => a.id - b.id)
+                                    .map(animal => (
+                                        <div
+                                            key={animal.id}
+                                            onClick={() => propertyPlayCardId && handleAnimalCardClick(animal.id)}
+                                        >
+                                          <AnimalWithPropertyBadge
+                                              id={animal.id}
+                                              food={animal.food}
+                                              properties={animal.properties}
+                                              onClick={() => propertyPlayCardId && handleAnimalCardClick(animal.id)}
+                                          />
+                                        </div>
+                                    ))}
+                              </div>
+                            </div>
+                        )
+                    ))
             }
           </div>
         </div>
         <div className='deck-parent-container'>
-          {lobbyState && <Deck deckCount={lobbyState.deck_count} />}
+          {lobbyState && <Deck deckCount={lobbyState.deck_count}/>}
         </div>
         <div className='player-turn-status'>
           <span>{
             lobbyState &&
             (lobbyState.current_player === undefined ||
-              lobbyState.current_player === null ||
-              lobbyState.current_player === playerId)
-              ? 'Ваш ход'
-              : 'Ход противника'}
+                lobbyState.current_player === null ||
+                lobbyState.current_player === playerId)
+                ? 'Ваш ход'
+                : 'Ход противника'}
           </span>
         </div>
         <div className='food-chip-parent-container'>
-          {lobbyState && <FoodChip currentFood={lobbyState.food.current} />}
+          {lobbyState && <FoodChip currentFood={lobbyState.food.current}/>}
         </div>
         <div className="main-player-container">
           <div className="main-player-properties">
             {lobbyState &&
-              lobbyState.players
-                .filter(player => player.id === playerId)
-                .map(player => (
-                  player.animals &&
-                  Array.isArray(player.animals) &&
-                  player.animals.length > 0 && (
-                    <div key={player.id} className="player-animals">
-                      <div className="animals-cards">
-                        {player.animals.map(animal => (
-                          <div
-                            key={animal.id}
-                            onClick={() => propertyPlayCardId && handleAnimalCardClick(animal.id)}
-                          >
-                            <AnimalWithPropertyBadge
-                              id={animal.id}
-                              food={animal.food}
-                              properties={animal.properties}
-                              onClick={() => propertyPlayCardId && handleAnimalCardClick(animal.id)}
-                            />
-                            {lobbyState.phase === 3 && (
-                              <button
-                                className="feed-button"
-                                onClick={(e) => handleFeedAnimal(animal.id, e)}
-                              >
-                                Покормить
-                              </button>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )
-                ))
+                lobbyState.players
+                    .filter(player => player.id === playerId)
+                    .map(player => (
+                        player.animals &&
+                        Array.isArray(player.animals) &&
+                        player.animals.length > 0 && (
+                            <div key={player.id} className="player-animals">
+                              <div className="animals-cards">
+                                {player.animals
+                                    .sort((a, b) => a.id - b.id)
+                                    .map(animal => (
+                                        <div
+                                            key={animal.id}
+                                            onClick={() => propertyPlayCardId && handleAnimalCardClick(animal.id)}
+                                        >
+                                          <AnimalWithPropertyBadge
+                                              id={animal.id}
+                                              food={animal.food}
+                                              properties={animal.properties}
+                                              onClick={() => propertyPlayCardId && handleAnimalCardClick(animal.id)}
+                                          />
+                                          {lobbyState.phase === 3 && (
+                                              <button
+                                                  className="feed-button"
+                                                  onClick={(e) => handleFeedAnimal(animal.id, e)}
+                                              >
+                                                Покормить
+                                              </button>
+                                          )}
+                                        </div>
+                                    ))}
+                              </div>
+                            </div>
+                        )
+                    ))
             }
           </div>
           <div className="main-player-deck">
             <PlayerHand
-              onPropertySelect={setPropertyPlayCardId}
-              playerHand={playerHand}
-              fetchLobbyState={fetchLobbyState}
-              fetchPlayerHand={fetchPlayerHand}
+                onPropertySelect={setPropertyPlayCardId}
+                playerHand={playerHand}
+                fetchLobbyState={fetchLobbyState}
+                fetchPlayerHand={fetchPlayerHand}
             />
             <div className="end-turn-button-container">
-              <EndTurn player_id={playerId} />
+              <EndTurn player_id={playerId}/>
             </div>
           </div>
         </div>
