@@ -229,6 +229,10 @@ export default function GamePage() {
                                                                         method: 'POST'
                                                                     });
                                                                     if (response.ok) {
+                                                                        const data = await response.json();
+                                                                        if (data.status === 'error') {
+                                                                            alert(data.message);
+                                                                        }
                                                                         fetchLobbyState();
                                                                     }
                                                                 } catch (err) {
