@@ -231,7 +231,7 @@ export default function GamePage() {
                                                                     if (response.ok) {
                                                                         const data = await response.json();
                                                                         if (data.status === 'error') {
-                                                                            alert(data.message);
+                                                                            alert(data.msg);
                                                                         }
                                                                         fetchLobbyState();
                                                                     }
