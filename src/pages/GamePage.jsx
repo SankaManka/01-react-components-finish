@@ -26,6 +26,25 @@ export default function GamePage() {
   const playerId = parseInt(player_id);
   const [usedTopatuns, setUsedTopatuns] = useState(new Set());
   const [usedSpyachkas, setUsedSpyachkas] = useState(new Set());
+  const [predatorMode, setPredatorMode] = useState({
+  active: false,
+  predatorId: null
+});
+const activatePredatorMode = (animalId, e) => {
+  e.stopPropagation();
+  if (usedPredators.has(animalId)) return;
+  setPredatorMode({
+    active: true,
+    predatorId: animalId
+  });
+};
+  const [usedPredators, setUsedPredators] = useState(new Set());
+
+  useEffect(() => {
+  if (lobbyState?.phase !== 3) {
+    setUsedPredators(new Set());
+  }
+}, [lobbyState?.phase]);
 
   const handleAnimalCardClick = async (animalId) => {
     if (!propertyPlayCardId) return;
@@ -121,7 +140,33 @@ const handleSpyachka = async (animalId, e) => {
     console.error('Ошибка при использовании Спячки:', err);
   }
 };
+const handlePredatorAttack = async (targetAnimalId) => {
+  if (!predatorMode.active) return;
 
+  try {
+    const response = await fetch(`/api/game/use-predator/${predatorMode.predatorId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ target_animal_id: targetAnimalId })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.status === 'error') {
+        alert(data.msg);
+      } else {
+        setUsedPredators(prev => new Set(prev).add(predatorMode.predatorId));
+      }
+      fetchLobbyState();
+    }
+  } catch (err) {
+    console.error('Ошибка при атаке хищника:', err);
+  } finally {
+    setPredatorMode({ active: false, predatorId: null });
+  }
+};
 // Сброс при смене фазы
 useEffect(() => {
   if (lobbyState?.phase !== 3) {
@@ -256,6 +301,17 @@ if (lobbyState?.game_finished) {
       <div className="game-field">
         <div className="opponent-section">
           <OpponentHand/>
+          {predatorMode.active && (
+        <div className="predator-mode-indicator">
+          Выберите цель для атаки хищника
+          <button
+            onClick={() => setPredatorMode({ active: false, predatorId: null })}
+            className="cancel-predator-button"
+          >
+            Отменить
+          </button>
+        </div>
+      )}
           <div className="opponent-properties">
             {lobbyState &&
                 lobbyState.players
@@ -271,13 +327,26 @@ if (lobbyState?.game_finished) {
                                     .map(animal => (
                                         <div
                                             key={animal.id}
-                                            onClick={() => propertyPlayCardId && handleAnimalCardClick(animal.id)}
+                                            onClick={() => {
+                                              if (predatorMode.active) {
+                                                handlePredatorAttack(animal.id);
+                                              } else if (propertyPlayCardId) {
+                                                handleAnimalCardClick(animal.id);
+                                              }
+                                            }}
+                                            className={predatorMode.active ? 'attack-target' : ''}
                                         >
                                           <AnimalWithPropertyBadge
                                               id={animal.id}
                                               food={animal.food}
                                               properties={animal.properties}
-                                              onClick={() => propertyPlayCardId && handleAnimalCardClick(animal.id)}
+                                              onClick={() => {
+                                                if (predatorMode.active) {
+                                                  handlePredatorAttack(animal.id);
+                                                } else if (propertyPlayCardId) {
+                                                  handleAnimalCardClick(animal.id);
+                                                }
+                                              }}
                                           />
                                         </div>
                                     ))}
@@ -354,6 +423,15 @@ if (lobbyState?.game_finished) {
                                                       Спячка
                                                     </button>
                                                 )}
+                                                {animal.properties?.some(prop => prop.name === 'Хищник') && (
+                                                    <button
+                                                      className="predator-button"
+                                                      onClick={(e) => activatePredatorMode(animal.id, e)}
+                                                      disabled={usedPredators.has(animal.id) || predatorMode.active}
+                                                    >
+                                                      Атаковать
+                                                    </button>
+                                                  )}
                                               </div>
                                           )}
                                         </div>
