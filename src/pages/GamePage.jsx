@@ -184,7 +184,7 @@ export default function GamePage() {
           {lobbyState && <Deck deckCount={lobbyState.deck_count} />}
         </div>
             <div className='player-turn-status'>
-              <span>Ваш ход</span>
+              <span>{lobbyState && (lobbyState.current_player === playerId || lobbyState.current_player === null) ? 'Ваш ход' : 'Ход противника'}</span>
             </div>
         <div className='food-chip-parent-container'>
           {lobbyState && <FoodChip currentFood={lobbyState.food.current} />}
