@@ -178,14 +178,11 @@ export default function GamePage() {
 if (lobbyState?.game_finished) {
   const winnerId = lobbyState.winner;
   const isWinner = winnerId === playerId;
-  const winnerScore = lobbyState.game_event?.event_data?.score || 0;
-
   return (
     <div className="game-container">
       <div className="game-end-screen">
         <h1>{isWinner ? 'Поздравляем! Вы победили!' : 'Вы проиграли!'}</h1>
         <div className="winner-info">
-          <p>Счет: {winnerScore}</p>
         </div>
         <LeaveLobby />
       </div>
