@@ -90,9 +90,9 @@ const handleTopatun = async (animalId, e) => {
       const data = await response.json();
       if (data.status === 'error') {
         alert(data.msg);
+      } else {
+        setUsedTopatuns(prev => new Set(prev).add(animalId));
       }
-      // Обновляем состояние после использования Топотуна
-      setUsedTopatuns(prev => new Set(prev).add(animalId));
       fetchLobbyState();
     }
   } catch (err) {
