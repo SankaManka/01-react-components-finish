@@ -40,7 +40,7 @@ export default function LeaveLobby() {
   };
 
   return (
-    <div>
+    <div className='leave-lobby-container'>
       <button 
         className="leave-lobby-btn" 
         onClick={handleLeave}

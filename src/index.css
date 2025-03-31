@@ -384,7 +384,7 @@ p {
   /* gap: 113px; */
   justify-content: space-between;
   overflow-y: auto; /* Добавляем прокрутку при необходимости */
-  height: calc(100vh - 20px);
+  height: 100vh;
 }
 
 .main-player-deck {
@@ -393,11 +393,10 @@ p {
   min-height: 203px;
   justify-content: flex-end;
   flex-shrink: 0;
-  padding: 10px 0;
 }
 
 .main-player-cards {
-  padding-bottom: 20px;
+  padding-bottom: 10px;
   display: flex;
   min-width: 85%;
   justify-content: center;
@@ -855,4 +854,10 @@ p {
 
 .winner {
   font-size: 50px;
+}
+
+.leave-lobby-container {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
