@@ -293,7 +293,7 @@ p {
 /* card animal */
 .card-animal {
   width: 121px;
-  height: 183px;
+  height: 166px;
   background-color: #F3F8E8;
   background-image: url(/public/card-animal-background.svg);
   background-repeat: no-repeat;
@@ -305,7 +305,7 @@ p {
 /* card property */
 .card-property {
   width: 121px;
-  height: 183px;
+  height: 166px;
   background-color: #F3F8E8;
   background-image: url(/public/card-property-background.svg);
   background-repeat: no-repeat;
