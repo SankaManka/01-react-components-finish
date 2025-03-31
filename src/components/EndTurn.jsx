@@ -82,7 +82,7 @@ export default function EndTurn({ player_id }) {
   };
 
 const handleEndPhase = async () => {
-  const phaseKey = `${gameState.round}-${gameState.phase}`; // Уникальный ключ для фазы и раунда
+  const phaseKey = `${gameState.round}-${gameState.phase}`;
   if (endedPhases.has(phaseKey)) return;
 
   try {
@@ -94,18 +94,19 @@ const handleEndPhase = async () => {
     const data = await response.json(); // Парсим JSON ответ
 
     if (!response.ok) {
-      // Если в ответе есть status: 'error' и msg - показываем alert
+      // Если сервер вернул ошибку (status: "error" и msg) — показываем alert
       if (data.status === 'error' && data.msg) {
-        alert(data.msg);
-      } else {
-        setEndedPhases(prev => new Set([...prev, phaseKey])); // Блокируем кнопку для текущей фазы
+        alert(data.msg); // Должно сработать для {"msg":"сейчас не ваш ход", ...}
       }
       throw new Error(`Ошибка HTTP: ${response.status}`);
     }
 
+    // Если запрос успешен — блокируем кнопку
+    setEndedPhases(prev => new Set([...prev, phaseKey]));
+
   } catch (err) {
     console.error('Ошибка при завершении фазы:', err);
-    // Если ошибка не связана с HTTP (например, проблемы с сетью), но есть сообщение - показываем
+    // Если ошибка не HTTP (например, сеть или синтаксис JSON)
     if (err.message && !err.message.startsWith('Ошибка HTTP')) {
       alert(err.message);
     }
