@@ -91,18 +91,14 @@ const handleEndPhase = async () => {
       headers: { 'Content-Type': 'application/json' }
     });
 
-    const data = await response.json(); // Парсим JSON ответ
-
     if (!response.ok) {
-      // Если сервер вернул ошибку (status: "error" и msg) — показываем alert
-      if (data.status === 'error' && data.msg) {
+      const data = await response.json();
+      if (data.status === 'error') {
         alert(data.msg); // Должно сработать для {"msg":"сейчас не ваш ход", ...}
+      } else {
+        setEndedPhases(prev => new Set([...prev, phaseKey]));
       }
-      throw new Error(`Ошибка HTTP: ${response.status}`);
     }
-
-    // Если запрос успешен — блокируем кнопку
-    setEndedPhases(prev => new Set([...prev, phaseKey]));
 
   } catch (err) {
     console.error('Ошибка при завершении фазы:', err);
