@@ -9,9 +9,11 @@ export default function CardAnimal({ id, food, food_need }) {
   return (
     <div className="card-animal" style={{ transform: `rotate(${getRotation()}deg)` }}>
       <div className="card-back">
-        <div className="animal-food">
-          Еда: {food} / {food_need}
-        </div>
+        {(food !== undefined && food !== null) && (food_need !== undefined && food_need !== null) && (
+          <div className="animal-food">
+            Еда: {food} / {food_need}
+          </div>
+        )}
       </div>
     </div>
   );
