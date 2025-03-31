@@ -10,6 +10,7 @@ import FoodChip from '../components/FoodChip';
 import '../index.css';
 import CardAnimal from '../components/CardAnimal';
 import Deck from '../components/Deck';
+import RulesModal from '../components/RulesModal';
 
 export default function GamePage() {
   const { lobby_id, player_id } = useParams();
@@ -280,7 +281,7 @@ if (lobbyState?.game_finished) {
   return (
     <div className="game-container">
       <div className="game-end-screen">
-        <h1>{isWinner ? 'Поздравляем! Вы победили!' : 'Вы проиграли!'}</h1>
+        <h1 className='winner'>{isWinner ? 'Поздравляем! Вы победили!' : 'Вы проиграли!'}</h1>
         <div className="winner-info">
         </div>
         <LeaveLobby />
@@ -446,6 +447,16 @@ if (lobbyState?.game_finished) {
           </div>
         </div>
       </div>
+      <footer
+        style={{
+          position: 'fixed',
+          bottom: '30px',
+          left: '30px',
+          width: '100%'
+        }}
+      >
+        <RulesModal />
+      </footer>
     </main>
   );
 }

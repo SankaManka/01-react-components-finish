@@ -852,3 +852,7 @@ p {
   border-radius: 4px;
   cursor: pointer;
 }
+
+.winner {
+  font-size: 50px;
+}
