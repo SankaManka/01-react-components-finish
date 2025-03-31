@@ -1,7 +1,7 @@
 import CardAnimal from "./CardAnimal";
 import '../index.css';
 
-export default function AnimalWithPropertyBadge({ id, food, properties, onClick }) {
+export default function AnimalWithPropertyBadge({ id, food, food_need, properties, onClick }) {
   return (
     <div className="animal-with-property-badge">
       {properties && properties.length > 0 && (
@@ -20,7 +20,7 @@ export default function AnimalWithPropertyBadge({ id, food, properties, onClick 
         </div>
       )}
         <div onClick={onClick}>
-            <CardAnimal id={id} food={food}/>
+            <CardAnimal id={id} food={food} food_need={food_need} />
         </div>
     </div>
   );

@@ -333,6 +333,7 @@ if (lobbyState?.game_finished) {
                                           <AnimalWithPropertyBadge
                                               id={animal.id}
                                               food={animal.food}
+                                              food_need={animal.food_need}
                                               properties={animal.properties}
                                               /* onClick убран, чтобы избежать двойного срабатывания */
                                           />
@@ -383,6 +384,7 @@ if (lobbyState?.game_finished) {
                                           <AnimalWithPropertyBadge
                                               id={animal.id}
                                               food={animal.food}
+                                              food_need={animal.food_need}
                                               properties={animal.properties}
                                               onClick={() => propertyPlayCardId && handleAnimalCardClick(animal.id)}
                                           />
