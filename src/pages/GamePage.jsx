@@ -452,7 +452,7 @@ if (lobbyState?.game_finished) {
           position: 'fixed',
           bottom: '30px',
           left: '30px',
-          width: '100%'
+          width: '20%'
         }}
       >
         <RulesModal />
