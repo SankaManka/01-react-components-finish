@@ -411,7 +411,7 @@ p {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  gap: 70px;
+  gap: 25px;
 }
 
 .end-turn-button-container {
