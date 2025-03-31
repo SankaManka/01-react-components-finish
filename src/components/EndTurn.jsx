@@ -93,8 +93,9 @@ const handleEndPhase = async () => {
 
     if (!response.ok) {
       const data = await response.json();
+      console.log(data);
       if (data.status === 'error') {
-        alert(data.msg); // Должно сработать для {"msg":"сейчас не ваш ход", ...}
+        alert(data.msg);
       } else {
         setEndedPhases(prev => new Set([...prev, phaseKey]));
       }
