@@ -136,6 +136,8 @@ const handleSpyachka = async (animalId, e) => {
 };
 const handlePredatorAttack = async (targetAnimalId) => {
   if (!predatorMode.active) return;
+  // Проверяем, использовался ли уже этот хищник в текущей фазе
+  if (usedPredators.has(predatorMode.predatorId)) return;
 
   try {
     const response = await fetch(`/api/game/use-predator/${predatorMode.predatorId}`, {
@@ -151,6 +153,7 @@ const handlePredatorAttack = async (targetAnimalId) => {
       if (data.status === 'error') {
         alert(data.msg);
       } else {
+        // Добавляем id хищника в множество использованных
         setUsedPredators(prev => new Set(prev).add(predatorMode.predatorId));
       }
       fetchLobbyState();
@@ -165,11 +168,8 @@ const handlePredatorAttack = async (targetAnimalId) => {
 useEffect(() => {
   if (lobbyState?.phase !== 3) {
     setUsedSpyachkas(new Set());
-  }
-}, [lobbyState?.phase]);
-useEffect(() => {
-  if (lobbyState?.phase !== 3) {
     setUsedTopatuns(new Set());
+    setUsedPredators(new Set());
   }
 }, [lobbyState?.phase]);
 
