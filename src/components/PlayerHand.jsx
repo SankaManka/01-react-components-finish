@@ -68,7 +68,7 @@ export default function PlayerHand({
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  if (!playerHand?.length) return <div className="empty">Нет карт в руке</div>;
+  if (!playerHand?.length) return <div className="empty"></div>;
 
   return (
     <div className="main-player-cards">
