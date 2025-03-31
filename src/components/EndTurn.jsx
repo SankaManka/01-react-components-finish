@@ -81,21 +81,36 @@ export default function EndTurn({ player_id }) {
     }
   };
 
-  const handleEndPhase = async () => {
-    const phaseKey = `${gameState.round}-${gameState.phase}`; // Уникальный ключ для фазы и раунда
-    if (endedPhases.has(phaseKey)) return;
+const handleEndPhase = async () => {
+  const phaseKey = `${gameState.round}-${gameState.phase}`; // Уникальный ключ для фазы и раунда
+  if (endedPhases.has(phaseKey)) return;
 
-    try {
-      const response = await fetch(`/api/game/next-phase/${player_id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
-      setEndedPhases(prev => new Set([...prev, phaseKey])); // Блокируем кнопку для текущей фазы
-    } catch (err) {
-      console.error('Ошибка при завершении фазы:', err);
+  try {
+    const response = await fetch(`/api/game/next-phase/${player_id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    const data = await response.json(); // Парсим JSON ответ
+
+    if (!response.ok) {
+      // Если в ответе есть status: 'error' и msg - показываем alert
+      if (data.status === 'error' && data.msg) {
+        alert(data.msg);
+      } else {
+        setEndedPhases(prev => new Set([...prev, phaseKey])); // Блокируем кнопку для текущей фазы
+      }
+      throw new Error(`Ошибка HTTP: ${response.status}`);
     }
-  };
+
+  } catch (err) {
+    console.error('Ошибка при завершении фазы:', err);
+    // Если ошибка не связана с HTTP (например, проблемы с сетью), но есть сообщение - показываем
+    if (err.message && !err.message.startsWith('Ошибка HTTP')) {
+      alert(err.message);
+    }
+  }
+};
 
   const buttonStyleTurn = isTurnEnded || player_id !== currentPlayer
     ? { backgroundColor: '#ff4444', color: '#ffe6e6', cursor: 'not-allowed' }
