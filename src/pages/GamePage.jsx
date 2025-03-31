@@ -334,15 +334,10 @@ if (lobbyState?.game_finished) {
                                               id={animal.id}
                                               food={animal.food}
                                               properties={animal.properties}
-                                              onClick={() => {
-                                                if (predatorMode.active) {
-                                                  handlePredatorAttack(animal.id);
-                                                } else if (propertyPlayCardId) {
-                                                  handleAnimalCardClick(animal.id);
-                                                }
-                                              }}
+                                              /* onClick убран, чтобы избежать двойного срабатывания */
                                           />
                                         </div>
+
                                     ))}
                               </div>
                             </div>
