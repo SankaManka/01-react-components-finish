@@ -86,7 +86,7 @@ export default function EndTurn({ player_id }) {
     if (endedPhases.has(phaseKey)) return;
 
     try {
-      const response = await fetch(`/api/game/next-phase/${lobby_id}`, {
+      const response = await fetch(`/api/game/next-phase/${player_id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
