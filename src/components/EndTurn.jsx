@@ -91,9 +91,8 @@ const handleEndPhase = async () => {
       headers: { 'Content-Type': 'application/json' }
     });
 
-    if (!response.ok) {
+    if (response.ok) {
       const data = await response.json();
-      console.log(data);
       if (data.status === 'error') {
         alert(data.msg);
       } else {
